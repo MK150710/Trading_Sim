@@ -1,0 +1,36 @@
+
+  <!-- ===================== MARKET TICKER ===================== -->
+  <div class="ts-ticker-bar" aria-label="Live market ticker" role="marquee">
+    <div class="ts-ticker-track" id="tickerTrack">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+
+  <!-- ===================== LIVE MARKET PREVIEW ===================== -->
+  <section class="ts-section" id="markets" aria-labelledby="markets-heading">
+    <div class="container">
+
+      <div class="ts-section-header text-center reveal-up">
+        <span class="ts-section-eyebrow">Live Market Preview</span>
+        <h2 class="ts-section-title" id="markets-heading">Markets at a Glance</h2>
+        <p class="ts-section-sub">Simulated prices that mirror real-world volatility, updated every few seconds.</p>
+      </div>
+
+      <div class="ts-market-widget reveal-up">
+        <!-- Market table header -->
+        <div class="ts-market-header">
+          <span>Stock</span>
+          <span>Price</span>
+          <span>Change</span>
+          <span class="d-none d-md-block">Volume</span>
+          <span class="d-none d-lg-block">Trend</span>
+        </div>
+
+        <!-- Market rows — data injected by JS -->
+        <div id="marketRows"></div>
+      </div>
+
+    </div>
+  </section>
+  <!-- /LIVE MARKET -->
