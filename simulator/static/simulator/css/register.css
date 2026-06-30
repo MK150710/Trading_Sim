@@ -1,0 +1,810 @@
+/* ============================================================
+   TradeSims — register.css
+   Registration page styles.
+   Inherits all design tokens from styles.css.
+   Only page-specific rules live here.
+   ============================================================ */
+
+
+/* ========================
+   PAGE SHELL & BACKGROUND
+   ======================== */
+
+.rg-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  padding-top: 80px; /* clear fixed navbar */
+  background: var(--ts-body-bg);
+}
+
+/* Ambient gradient orbs */
+.rg-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.rg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: orbDrift 18s ease-in-out infinite alternate;
+}
+
+.rg-orb-1 {
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  left: -150px;
+  background: radial-gradient(circle, rgba(16,185,129,0.4) 0%, transparent 70%);
+  animation-duration: 20s;
+}
+
+.rg-orb-2 {
+  width: 500px;
+  height: 500px;
+  bottom: -100px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%);
+  animation-duration: 24s;
+  animation-delay: -8s;
+}
+
+.rg-orb-3 {
+  width: 350px;
+  height: 350px;
+  top: 40%;
+  left: 55%;
+  background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+  animation-duration: 16s;
+  animation-delay: -4s;
+}
+
+@keyframes orbDrift {
+  0%   { transform: translate(0px, 0px) scale(1); }
+  50%  { transform: translate(30px, -20px) scale(1.05); }
+  100% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+/* Ensure content sits above orbs */
+.rg-container {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ========================
+   CARD (two-panel layout)
+   ======================== */
+
+.rg-card {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  background: var(--ts-card-bg);
+  border: 1px solid var(--ts-card-border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: var(--shadow-lg), 0 0 80px rgba(16,185,129,0.06);
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .rg-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ========================
+   LEFT PANEL — brand side
+   ======================== */
+
+.rg-panel-left {
+  position: relative;
+  background: linear-gradient(
+    160deg,
+    rgba(16,185,129,0.12) 0%,
+    rgba(11,20,38,0.4) 50%,
+    rgba(59,130,246,0.06) 100%
+  );
+  border-right: 1px solid var(--ts-card-border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* Hide left panel on small screens — form takes full width */
+@media (max-width: 767px) {
+  .rg-panel-left { display: none; }
+}
+
+.rg-panel-inner {
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+}
+
+/* Brand logo in left panel */
+.rg-brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ts-text-primary) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 2.25rem;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.rg-brand .ts-logo-icon {
+  color: var(--ts-green);
+  font-size: 1.4rem;
+}
+
+/* Panel headline */
+.rg-panel-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ts-text-primary);
+  margin-bottom: 0.9rem;
+}
+
+.rg-panel-accent {
+  background: linear-gradient(135deg, var(--ts-green), #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.rg-panel-sub {
+  font-size: 0.9rem;
+  color: var(--ts-text-muted);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  max-width: 300px;
+}
+
+/* Benefit list */
+.rg-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.rg-benefit-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.rg-benefit-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(16,185,129,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  color: var(--ts-green);
+}
+
+.rg-benefit-item strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ts-text-primary);
+  margin-bottom: 0.1rem;
+}
+
+.rg-benefit-item p {
+  font-size: 0.78rem;
+  color: var(--ts-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Stat strip */
+.rg-stat-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--ts-card-border);
+  border-radius: var(--radius-md);
+}
+
+.rg-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.rg-stat-n {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--ts-green);
+  letter-spacing: -0.02em;
+}
+
+.rg-stat-l {
+  font-size: 0.68rem;
+  color: var(--ts-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.1rem;
+}
+
+.rg-stat-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--ts-card-border);
+}
+
+
+/* ========================
+   RIGHT PANEL — form side
+   ======================== */
+
+.rg-panel-right {
+  padding: 0;
+}
+
+.rg-form-wrap {
+  padding: 2.5rem 2rem;
+}
+
+@media (min-width: 992px) {
+  .rg-form-wrap {
+    padding: 2.75rem 2.5rem;
+  }
+}
+
+.rg-form-header {
+  margin-bottom: 1.75rem;
+}
+
+.rg-form-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ts-text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.rg-form-sub {
+  font-size: 0.85rem;
+  color: var(--ts-text-muted);
+  margin: 0;
+}
+
+.rg-link {
+  color: var(--ts-green) !important;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+.rg-link:hover { opacity: 0.75; }
+
+
+/* ========================
+   OAUTH BUTTONS
+   ======================== */
+
+.rg-oauth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 400px) {
+  .rg-oauth-row { grid-template-columns: 1fr; }
+}
+
+.rg-oauth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--ts-card-border);
+  border-radius: var(--radius-md);
+  color: var(--ts-text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.65rem 0.9rem;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  white-space: nowrap;
+}
+
+.rg-oauth-btn:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.18);
+  color: var(--ts-text-primary);
+}
+
+[data-theme="light"] .rg-oauth-btn {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.1);
+  color: var(--ts-text-secondary);
+}
+
+[data-theme="light"] .rg-oauth-btn:hover {
+  background: rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.2);
+}
+
+
+/* ========================
+   OR DIVIDER
+   ======================== */
+
+.rg-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.4rem;
+}
+
+.rg-divider::before,
+.rg-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--ts-card-border);
+}
+
+.rg-divider span {
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ts-text-muted);
+  white-space: nowrap;
+}
+
+
+/* ========================
+   FORM FIELDS
+   ======================== */
+
+.rg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.rg-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Label */
+.rg-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ts-text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.rg-required {
+  color: var(--ts-red);
+  margin-left: 2px;
+}
+
+/* Input wrapper */
+.rg-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Leading icon */
+.rg-input-icon {
+  position: absolute;
+  left: 0.9rem;
+  font-size: 0.9rem;
+  color: var(--ts-text-muted);
+  pointer-events: none;
+  transition: color var(--transition);
+  z-index: 1;
+}
+
+/* Trailing check icon (shown when valid) */
+.rg-input-check {
+  position: absolute;
+  right: 0.9rem;
+  font-size: 0.9rem;
+  color: var(--ts-green);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.25s ease, transform 0.25s var(--ease-spring);
+  pointer-events: none;
+}
+
+/* The input itself */
+.rg-input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--ts-card-border);
+  border-radius: var(--radius-md);
+  color: var(--ts-text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.7rem 2.5rem 0.7rem 2.5rem; /* icon left, icon/toggle right */
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    box-shadow var(--transition);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.rg-input::placeholder { color: var(--ts-muted); }
+
+/* Focus */
+.rg-input:focus {
+  border-color: var(--ts-green);
+  background: rgba(16,185,129,0.04);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+}
+
+.rg-input-wrap:focus-within .rg-input-icon {
+  color: var(--ts-green);
+}
+
+/* Valid state */
+.rg-input.rg-input--valid {
+  border-color: var(--ts-green);
+}
+
+.rg-input.rg-input--valid ~ .rg-input-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Error state */
+.rg-input.rg-input--error,
+.rg-input--error {
+  border-color: var(--ts-red);
+  background: rgba(239,68,68,0.04);
+}
+
+.rg-input.rg-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+}
+
+/* Light mode overrides */
+[data-theme="light"] .rg-input {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.12);
+  color: var(--ts-text-primary);
+}
+
+[data-theme="light"] .rg-input:focus {
+  background: rgba(16,185,129,0.04);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+}
+
+/* Password toggle button */
+.rg-pw-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ts-text-muted);
+  font-size: 0.95rem;
+  padding: 0.2rem;
+  transition: color var(--transition);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.rg-pw-toggle:hover { color: var(--ts-green); }
+.rg-pw-toggle:focus-visible {
+  outline: 2px solid var(--ts-green);
+  border-radius: 4px;
+}
+
+/* Field hints and errors */
+.rg-field-hint {
+  font-size: 0.72rem;
+  color: var(--ts-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.rg-field-error {
+  font-size: 0.72rem;
+  color: var(--ts-red);
+  margin: 0;
+  min-height: 1em;
+  line-height: 1.4;
+}
+
+
+/* ========================
+   PASSWORD STRENGTH METER
+   ======================== */
+
+.rg-strength-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+
+.rg-strength-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+[data-theme="light"] .rg-strength-bar {
+  background: rgba(0,0,0,0.08);
+}
+
+.rg-strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  transition: width 0.4s var(--ease-out), background 0.4s ease;
+  background: var(--ts-red);
+}
+
+.rg-strength-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ts-text-muted);
+  min-width: 50px;
+  transition: color 0.3s;
+}
+
+
+/* ========================
+   PASSWORD RULES CHECKLIST
+   ======================== */
+
+.rg-pw-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.75rem;
+}
+
+.rg-pw-rule {
+  font-size: 0.72rem;
+  color: var(--ts-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.3s;
+}
+
+.rg-pw-rule i {
+  font-size: 0.7rem;
+  transition: all 0.25s var(--ease-spring);
+}
+
+/* Met rule */
+.rg-pw-rule.met {
+  color: var(--ts-green);
+}
+
+.rg-pw-rule.met i::before {
+  content: '\F26E'; /* bi-check-circle-fill */
+  font-family: 'bootstrap-icons';
+  color: var(--ts-green);
+}
+
+
+/* ========================
+   CHECKBOX (Terms)
+   ======================== */
+
+.rg-checkbox-group {
+  margin-top: 0.25rem;
+}
+
+.rg-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--ts-text-muted);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.rg-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.rg-checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--ts-card-border);
+  border-radius: 5px;
+  background: rgba(255,255,255,0.04);
+  flex-shrink: 0;
+  position: relative;
+  margin-top: 1px;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+/* Checkmark */
+.rg-checkbox-custom::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.rg-checkbox:checked + .rg-checkbox-custom {
+  background: var(--ts-green);
+  border-color: var(--ts-green);
+}
+
+.rg-checkbox:checked + .rg-checkbox-custom::after {
+  transform: rotate(45deg) scale(1);
+}
+
+.rg-checkbox:focus-visible + .rg-checkbox-custom {
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+  border-color: var(--ts-green);
+}
+
+[data-theme="light"] .rg-checkbox-custom {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.18);
+}
+
+
+/* ========================
+   NON-FIELD ERROR ALERT
+   ======================== */
+
+.rg-form-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: var(--ts-red);
+  line-height: 1.5;
+}
+
+.rg-form-alert i { flex-shrink: 0; font-size: 0.95rem; margin-top: 1px; }
+
+
+/* ========================
+   SUBMIT BUTTON
+   ======================== */
+
+.rg-submit {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--ts-green);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  margin-top: 0.5rem;
+}
+
+.rg-submit:hover:not(:disabled) {
+  background: var(--ts-green-dim);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(16,185,129,0.35);
+}
+
+.rg-submit:active:not(:disabled) { transform: translateY(0); }
+
+.rg-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.rg-submit-spinner {
+  display: none;
+}
+
+.rg-submit-spinner i {
+  animation: spinIcon 0.7s linear infinite;
+}
+
+.rg-submit.loading .rg-submit-text { display: none; }
+.rg-submit.loading .rg-submit-spinner { display: flex; }
+
+@keyframes spinIcon {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Disclaimer beneath submit */
+.rg-disclaimer {
+  font-size: 0.7rem;
+  color: var(--ts-text-muted);
+  text-align: center;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  opacity: 0.75;
+}
+
+
+/* ========================
+   LIGHT MODE ADJUSTMENTS
+   ======================== */
+
+[data-theme="light"] .rg-panel-left {
+  background: linear-gradient(
+    160deg,
+    rgba(16,185,129,0.08) 0%,
+    rgba(241,245,249,0.6) 50%,
+    rgba(59,130,246,0.04) 100%
+  );
+  border-right-color: rgba(0,0,0,0.07);
+}
+
+[data-theme="light"] .rg-stat-strip {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.08);
+}
