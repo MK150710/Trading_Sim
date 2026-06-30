@@ -1,0 +1,343 @@
+{% extends "simulator/layout.html" %}
+{% load static %}
+
+{% block title %}Create Account — TradeSims{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'simulator/css/register.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+<!-- ===================== REGISTER PAGE ===================== -->
+<main class="rg-page" aria-label="Registration page">
+
+  <!-- Ambient background -->
+  {% include "components/auth/background.html" with bg_class="rg-bg" orb_class="rg-orb" %}
+
+  <div class="container-fluid rg-container">
+    <div class="row justify-content-center align-items-center min-vh-100 py-5">
+      <div class="col-12 col-md-10 col-lg-9 col-xl-8">
+
+        <!-- Card shell -->
+        <div class="rg-card reveal-up">
+
+          <!-- ---- LEFT PANEL (brand / benefits) ---- -->
+           {% include "components/auth/left_panel_register.html" %}
+
+          <!-- ---- RIGHT PANEL (form) ---- -->
+          <section class="rg-panel-right" aria-labelledby="rg-form-heading">
+
+            <div class="rg-form-wrap">
+
+              <div class="rg-form-header">
+                <h2 class="rg-form-title" id="rg-form-heading">Create your account</h2>
+                <p class="rg-form-sub">
+                  Already have an account?
+                  <a href="{% url 'login' %}" class="rg-link">Log in</a>
+                </p>
+              </div>
+
+              <!-- Social / OAuth buttons (UI only — wire up in backend) -->
+              {% include "components/auth/Oauth.html" with text="register" %}
+
+              <!-- Divider -->
+              
+
+              <!-- ======= REGISTRATION FORM ======= -->
+              <!--
+                Django backend: point action to your register URL,
+                add {% csrf_token %}, and wire the `name` attributes
+                to your UserCreationForm / custom form fields.
+              -->
+              <form
+                id="registerForm"
+                class="rg-form"
+                method="POST"
+                action="{% url 'register' %}"
+                novalidate
+                aria-label="Registration form"
+              >
+                {% csrf_token %}
+
+                <!-- Name row -->
+                <div class="row g-3">
+                  <div class="col-sm-6">
+                    <div class="rg-field-group">
+                      <label for="id_first_name" class="rg-label">
+                        First name
+                        <span class="rg-required" aria-hidden="true">*</span>
+                      </label>
+                      <div class="rg-input-wrap">
+                        <i class="bi bi-person rg-input-icon" aria-hidden="true"></i>
+                        <input
+                          type="text"
+                          id="id_first_name"
+                          name="first_name"
+                          class="rg-input {% if form.first_name.errors %}rg-input--error{% endif %}"
+                          placeholder="Priya"
+                          autocomplete="given-name"
+                          required
+                          aria-required="true"
+                          aria-describedby="err-first_name"
+                          value="{{ form.first_name.value|default:'' }}"
+                        />
+                        <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                      </div>
+                      {% if form.first_name.errors %}
+                        <p class="rg-field-error" id="err-first_name" role="alert">{{ form.first_name.errors.as_text }}</p>
+                      {% else %}
+                        <p class="rg-field-error" id="err-first_name" role="alert" aria-hidden="true"></p>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <div class="col-sm-6">
+                    <div class="rg-field-group">
+                      <label for="id_last_name" class="rg-label">
+                        Last name
+                        <span class="rg-required" aria-hidden="true">*</span>
+                      </label>
+                      <div class="rg-input-wrap">
+                        <i class="bi bi-person rg-input-icon" aria-hidden="true"></i>
+                        <input
+                          type="text"
+                          id="id_last_name"
+                          name="last_name"
+                          class="rg-input {% if form.last_name.errors %}rg-input--error{% endif %}"
+                          placeholder="Kapoor"
+                          autocomplete="family-name"
+                          required
+                          aria-required="true"
+                          aria-describedby="err-last_name"
+                          value="{{ form.last_name.value|default:'' }}"
+                        />
+                        <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                      </div>
+                      {% if form.last_name.errors %}
+                        <p class="rg-field-error" id="err-last_name" role="alert">{{ form.last_name.errors.as_text }}</p>
+                      {% else %}
+                        <p class="rg-field-error" id="err-last_name" role="alert" aria-hidden="true"></p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Username -->
+                <div class="rg-field-group">
+                  <label for="id_username" class="rg-label">
+                    Username
+                    <span class="rg-required" aria-hidden="true">*</span>
+                  </label>
+                  <div class="rg-input-wrap">
+                    <i class="bi bi-at rg-input-icon" aria-hidden="true"></i>
+                    <input
+                      type="text"
+                      id="id_username"
+                      name="username"
+                      class="rg-input {% if form.username.errors %}rg-input--error{% endif %}"
+                      placeholder="priya_trades"
+                      autocomplete="username"
+                      required
+                      aria-required="true"
+                      aria-describedby="err-username hint-username"
+                      value="{{ form.username.value|default:'' }}"
+                    />
+                    <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                  </div>
+                  <p class="rg-field-hint" id="hint-username">Letters, digits, and @/./+/-/_ only. Max 150 characters.</p>
+                  {% if form.username.errors %}
+                    <p class="rg-field-error" id="err-username" role="alert">{{ form.username.errors.as_text }}</p>
+                  {% else %}
+                    <p class="rg-field-error" id="err-username" role="alert" aria-hidden="true"></p>
+                  {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div class="rg-field-group">
+                  <label for="id_email" class="rg-label">
+                    Email address
+                    <span class="rg-required" aria-hidden="true">*</span>
+                  </label>
+                  <div class="rg-input-wrap">
+                    <i class="bi bi-envelope rg-input-icon" aria-hidden="true"></i>
+                    <input
+                      type="email"
+                      id="id_email"
+                      name="email"
+                      class="rg-input {% if form.email.errors %}rg-input--error{% endif %}"
+                      placeholder="priya@example.com"
+                      autocomplete="email"
+                      required
+                      aria-required="true"
+                      aria-describedby="err-email"
+                      value="{{ form.email.value|default:'' }}"
+                    />
+                    <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                  </div>
+                  {% if form.email.errors %}
+                    <p class="rg-field-error" id="err-email" role="alert">{{ form.email.errors.as_text }}</p>
+                  {% else %}
+                    <p class="rg-field-error" id="err-email" role="alert" aria-hidden="true"></p>
+                  {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="rg-field-group">
+                  <label for="id_password1" class="rg-label">
+                    Password
+                    <span class="rg-required" aria-hidden="true">*</span>
+                  </label>
+                  <div class="rg-input-wrap">
+                    <i class="bi bi-lock rg-input-icon" aria-hidden="true"></i>
+                    <input
+                      type="password"
+                      id="id_password1"
+                      name="password1"
+                      class="rg-input {% if form.password1.errors %}rg-input--error{% endif %}"
+                      placeholder="Create a strong password"
+                      autocomplete="new-password"
+                      required
+                      aria-required="true"
+                      aria-describedby="err-password1 rg-strength-label"
+                    />
+                    <button
+                      type="button"
+                      class="rg-pw-toggle"
+                      data-target="id_password1"
+                      aria-label="Show password"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <!-- Strength meter -->
+                  <div class="rg-strength-wrap" aria-live="polite" aria-atomic="true">
+                    <div class="rg-strength-bar" id="strengthBar">
+                      <div class="rg-strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span class="rg-strength-label" id="rg-strength-label"></span>
+                  </div>
+                  {% if form.password1.errors %}
+                    <p class="rg-field-error" id="err-password1" role="alert">{{ form.password1.errors.as_text }}</p>
+                  {% else %}
+                    <p class="rg-field-error" id="err-password1" role="alert" aria-hidden="true"></p>
+                  {% endif %}
+                </div>
+
+                <!-- Confirm password -->
+                <div class="rg-field-group">
+                  <label for="id_password2" class="rg-label">
+                    Confirm password
+                    <span class="rg-required" aria-hidden="true">*</span>
+                  </label>
+                  <div class="rg-input-wrap">
+                    <i class="bi bi-lock-fill rg-input-icon" aria-hidden="true"></i>
+                    <input
+                      type="password"
+                      id="id_password2"
+                      name="password2"
+                      class="rg-input {% if form.password2.errors %}rg-input--error{% endif %}"
+                      placeholder="Repeat your password"
+                      autocomplete="new-password"
+                      required
+                      aria-required="true"
+                      aria-describedby="err-password2"
+                    />
+                    <button
+                      type="button"
+                      class="rg-pw-toggle"
+                      data-target="id_password2"
+                      aria-label="Show confirm password"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  {% if form.password2.errors %}
+                    <p class="rg-field-error" id="err-password2" role="alert">{{ form.password2.errors.as_text }}</p>
+                  {% else %}
+                    <p class="rg-field-error" id="err-password2" role="alert" aria-hidden="true"></p>
+                  {% endif %}
+                </div>
+
+                <!-- Password rules checklist -->
+                <ul class="rg-pw-rules" aria-label="Password requirements" id="pwRules">
+                  <li class="rg-pw-rule" id="rule-length"   data-rule="length">
+                    <i class="bi bi-circle" aria-hidden="true"></i> At least 8 characters
+                  </li>
+                  <li class="rg-pw-rule" id="rule-upper"    data-rule="upper">
+                    <i class="bi bi-circle" aria-hidden="true"></i> One uppercase letter
+                  </li>
+                  <li class="rg-pw-rule" id="rule-number"   data-rule="number">
+                    <i class="bi bi-circle" aria-hidden="true"></i> One number
+                  </li>
+                  <li class="rg-pw-rule" id="rule-special"  data-rule="special">
+                    <i class="bi bi-circle" aria-hidden="true"></i> One special character
+                  </li>
+                </ul>
+
+                <!-- Terms -->
+                <div class="rg-field-group rg-checkbox-group">
+                  <label class="rg-checkbox-label" for="id_terms">
+                    <input
+                      type="checkbox"
+                      id="id_terms"
+                      name="terms"
+                      class="rg-checkbox"
+                      required
+                      aria-required="true"
+                      aria-describedby="err-terms"
+                    />
+                    <span class="rg-checkbox-custom" aria-hidden="true"></span>
+                    I agree to the
+                    <a href="#" class="rg-link">Terms of Use</a>
+                    and
+                    <a href="#" class="rg-link">Privacy Policy</a>
+                  </label>
+                  <p class="rg-field-error" id="err-terms" role="alert" aria-hidden="true"></p>
+                </div>
+
+                <!-- Non-field errors (Django) -->
+                {% if form.non_field_errors %}
+                <div class="rg-form-alert" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                  {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- Submit -->
+                <button type="submit" class="rg-submit ts-ripple" id="submitBtn">
+                  <span class="rg-submit-text">Create free account</span>
+                  <span class="rg-submit-spinner" aria-hidden="true">
+                    <i class="bi bi-arrow-clockwise"></i>
+                  </span>
+                </button>
+
+                <p class="rg-disclaimer">
+                  <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                  Your data is encrypted and never sold to third parties.
+                </p>
+
+              </form>
+              <!-- /REGISTRATION FORM -->
+
+            </div>
+          </section>
+          <!-- /RIGHT PANEL -->
+
+        </div>
+        <!-- /CARD -->
+
+      </div>
+    </div>
+  </div>
+
+</main>
+<!-- /REGISTER PAGE -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'simulator/js/register.js' %}"></script>
+{% endblock %}
