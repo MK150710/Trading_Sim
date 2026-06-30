@@ -1,0 +1,217 @@
+{% extends "simulator/layout.html" %}
+{% load static %}
+
+{% block title %}Log In — TradeSims{% endblock %}
+
+{% block extra_css %}
+{# Reuse the register stylesheet — all shared tokens, card, panels, inputs live there #}
+<link rel="stylesheet" href="{% static 'simulator/css/register.css' %}" />
+{# Login-specific overrides only #}
+<link rel="stylesheet" href="{% static 'simulator/css/login.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+<!-- ===================== LOGIN PAGE ===================== -->
+<main class="rg-page ln-page" aria-label="Login page">
+
+  <!-- Ambient background (same orbs as register, different colour mix) -->
+  {% include "components/auth/background.html" with bg_class="rg-bg ln-bg" orb_class="ln-orb" %}
+
+  <div class="container rg-container">
+    <div class="row justify-content-center align-items-center min-vh-100 py-4">
+      {# Slightly wider than the comment below suggested — xl-8 gives panels room to breathe #}
+      <div class="col-12 col-md-11 col-lg-9 col-xl-8">
+
+        <!-- Card shell -->
+        <div class="rg-card ln-card reveal-up">
+
+          <!-- ---- LEFT PANEL (brand / live market teaser) ---- -->
+          {% include "components/auth/left_panel_login.html" %}
+
+          <!-- ---- RIGHT PANEL (login form) ---- -->
+          <section class="rg-panel-right" aria-labelledby="ln-form-heading">
+
+            <div class="rg-form-wrap">
+
+              <div class="rg-form-header">
+                <h2 class="rg-form-title" id="ln-form-heading">Log in to your account</h2>
+                <br>
+                <p class="rg-form-sub">
+                  New to TradeSims ?
+                  <a href="{% url 'register' %}" class="rg-link">Create a free account →</a>
+                </p>
+              </div>
+
+              <!-- OAuth buttons -->
+              {% include "components/auth/Oauth.html" with text="login" %}
+
+              <!-- Divider -->
+
+              <!-- ======= LOGIN FORM ======= -->
+              <!--
+                Django backend:
+                  action  → your login URL (e.g. {% url 'login' %})
+                  Fields  → 'username' and 'password' match Django's AuthenticationForm
+                  next    → Django redirects here after successful login
+              -->
+              <form
+                id="loginForm"
+                class="rg-form"
+                method="POST"
+                action="{% url 'login' %}"
+                novalidate
+                aria-label="Login form"
+              >
+                {% csrf_token %}
+
+                {# Pass the 'next' redirect value through if present in GET params #}
+                {% if request.GET.next %}
+                  <input type="hidden" name="next" value="{{ request.GET.next }}" />
+                {% endif %}
+
+                <!-- Username / Email -->
+                <div class="rg-field-group">
+                  <label for="id_username" class="rg-label">
+                    Username or email
+                    <span class="rg-required" aria-hidden="true">*</span>
+                  </label>
+                  <div class="rg-input-wrap">
+                    <i class="bi bi-person rg-input-icon" aria-hidden="true"></i>
+                    <input
+                      type="text"
+                      id="id_username"
+                      name="username"
+                      class="rg-input {% if form.username.errors %}rg-input--error{% endif %}"
+                      placeholder="priya_trades or priya@example.com"
+                      autocomplete="username"
+                      autofocus
+                      required
+                      aria-required="true"
+                      aria-describedby="err-ln-username"
+                      value="{{ form.username.value|default:'' }}"
+                    />
+                    <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                  </div>
+                  {% if form.username.errors %}
+                    <p class="rg-field-error" id="err-ln-username" role="alert">{{ form.username.errors.as_text }}</p>
+                  {% else %}
+                    <p class="rg-field-error" id="err-ln-username" role="alert" aria-hidden="true"></p>
+                  {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="rg-field-group">
+                  <div class="ln-label-row">
+                    <label for="id_password" class="rg-label">
+                      Password
+                      <span class="rg-required" aria-hidden="true">*</span>
+                    </label>
+                    <a href="{% url 'login' %}" class="ln-forgot rg-link" tabindex="0">
+                      Forgot password?
+                    </a>
+                  </div>
+                  <div class="rg-input-wrap">
+                    <i class="bi bi-lock rg-input-icon" aria-hidden="true"></i>
+                    <input
+                      type="password"
+                      id="id_password"
+                      name="password"
+                      class="rg-input {% if form.password.errors %}rg-input--error{% endif %}"
+                      placeholder="Enter your password"
+                      autocomplete="current-password"
+                      required
+                      aria-required="true"
+                      aria-describedby="err-ln-password"
+                    />
+                    <button
+                      type="button"
+                      class="rg-pw-toggle"
+                      data-target="id_password"
+                      aria-label="Show password"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  {% if form.password.errors %}
+                    <p class="rg-field-error" id="err-ln-password" role="alert">{{ form.password.errors.as_text }}</p>
+                  {% else %}
+                    <p class="rg-field-error" id="err-ln-password" role="alert" aria-hidden="true"></p>
+                  {% endif %}
+                </div>
+
+                <!-- Remember me -->
+                <div class="rg-field-group rg-checkbox-group ln-remember-row">
+                  <label class="rg-checkbox-label" for="id_remember_me">
+                    <input
+                      type="checkbox"
+                      id="id_remember_me"
+                      name="remember_me"
+                      class="rg-checkbox"
+                    />
+                    <span class="rg-checkbox-custom" aria-hidden="true"></span>
+                    Keep me logged in for 30 days
+                  </label>
+                </div>
+
+                <!-- Non-field / credential errors from Django -->
+                {% if form.non_field_errors %}
+                <div class="rg-form-alert ln-auth-error" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                  <span>{{ form.non_field_errors }}</span>
+                </div>
+                {% endif %}
+
+                <!-- Django messages (e.g. "Your account has been locked") -->
+                {% if messages %}
+                  {% for message in messages %}
+                  <div class="rg-form-alert {% if message.tags == 'success' %}ln-alert-success{% endif %}" role="alert">
+                    <i class="bi bi-{% if message.tags == 'success' %}check-circle-fill{% else %}exclamation-triangle-fill{% endif %}" aria-hidden="true"></i>
+                    <span>{{ message }}</span>
+                  </div>
+                  {% endfor %}
+                {% endif %}
+
+                <!-- Submit -->
+                <button type="submit" class="rg-submit ts-ripple" id="lnSubmitBtn">
+                  <span class="rg-submit-text">
+                    <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                    Log in
+                  </span>
+                  <span class="rg-submit-spinner" aria-hidden="true">
+                    <i class="bi bi-arrow-clockwise"></i>
+                  </span>
+                </button>
+
+                <!-- Security note -->
+                <p class="rg-disclaimer">
+                  <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                  Never share your password. TradeSims will never ask for it by email.
+                </p>
+
+              </form>
+              <!-- /LOGIN FORM -->
+
+              <!-- Sign-up nudge at the bottom -->
+              
+
+            </div>
+          </section>
+          <!-- /RIGHT PANEL -->
+
+        </div>
+        <!-- /CARD -->
+
+      </div>
+    </div>
+  </div>
+
+</main>
+<!-- /LOGIN PAGE -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'simulator/js/login.js' %}"></script>
+{% endblock %}
