@@ -1,0 +1,365 @@
+/* ============================================================
+   TradeSims — login.css
+   Login page overrides only.
+   register.css loads first — shared tokens, card shell,
+   panel skeleton, inputs, oauth buttons, divider, checkbox,
+   submit button are all inherited from there.
+   This file fixes layout proportions and adds login-specific
+   components. Load order: styles.css → register.css → login.css
+   ============================================================ */
+
+
+/* ========================
+   PAGE WRAPPER
+   Give the page a tiny bit more breathing room at the top
+   than register (shorter form content)
+   ======================== */
+
+.ln-page {
+  padding-top: 88px; /* navbar height + 8px */
+}
+
+
+/* ========================
+   ORB COLOURS
+   Blue-indigo palette instead of green-dominant
+   ======================== */
+
+.ln-orb-1 {
+  width: 550px;
+  height: 550px;
+  top: -150px;
+  right: -100px;
+  left: auto;
+  background: radial-gradient(circle, rgba(59,130,246,0.30) 0%, transparent 70%) !important;
+  animation-duration: 22s;
+}
+
+.ln-orb-2 {
+  width: 480px;
+  height: 480px;
+  bottom: -100px;
+  left: -80px;
+  right: auto;
+  background: radial-gradient(circle, rgba(16,185,129,0.22) 0%, transparent 70%) !important;
+  animation-duration: 26s;
+  animation-delay: -9s;
+}
+
+.ln-orb-3 {
+  width: 320px;
+  height: 320px;
+  top: 38%;
+  left: 42%;
+  background: radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%) !important;
+  animation-duration: 18s;
+  animation-delay: -5s;
+}
+
+
+/* ========================
+   CARD OVERRIDES
+   1. Make the border more visible — the base value is nearly
+      invisible on dark backgrounds
+   2. Equal 1:1 columns — login form is short
+   3. Explicit min-height so the card doesn't feel cramped
+   ======================== */
+
+.ln-card {
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid rgba(255,255,255,0.13) !important;
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px rgba(16,185,129,0.08),
+    0 0 80px rgba(59,130,246,0.07) !important;
+  min-height: 520px; /* keeps the card from collapsing */
+}
+
+[data-theme="light"] .ln-card {
+  border-color: rgba(0,0,0,0.12) !important;
+}
+
+@media (max-width: 767px) {
+  .ln-card {
+    grid-template-columns: 1fr;
+    min-height: unset;
+  }
+}
+
+
+/* ========================
+   LEFT PANEL
+   - Tighter inner padding (content is shorter than register)
+   - Scaled-down headline so it never overflows the column
+   - Blue tint gradient instead of green
+   ======================== */
+
+.ln-panel-left {
+  background: linear-gradient(
+    155deg,
+    rgba(59,130,246,0.11) 0%,
+    rgba(11,20,38,0.50) 55%,
+    rgba(139,92,246,0.07) 100%
+  ) !important;
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+[data-theme="light"] .ln-panel-left {
+  background: linear-gradient(
+    155deg,
+    rgba(59,130,246,0.07) 0%,
+    rgba(241,245,249,0.65) 55%,
+    rgba(139,92,246,0.04) 100%
+  ) !important;
+  border-right-color: rgba(0,0,0,0.07) !important;
+}
+
+/* Tighter vertical padding — login left panel has less content */
+.ln-panel-left .rg-panel-inner {
+  padding: 2rem 1.75rem;
+  justify-content: flex-start;
+  gap: 0;
+}
+
+/* Logo gets less bottom margin here */
+.ln-panel-left .rg-brand {
+  margin-bottom: 1.6rem;
+}
+
+/*
+  THE KEY FIX: the shared .rg-panel-headline uses
+  clamp(1.7rem, 3vw, 2.4rem) — on the narrow login column
+  3vw resolves to ~33px which overflows.
+  Override with a tighter clamp scoped to the login panel.
+*/
+.ln-panel-left .rg-panel-headline {
+  font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+  line-height: 1.12;
+  margin-bottom: 0.75rem;
+}
+
+/* Sub also tighter */
+.ln-panel-left .rg-panel-sub {
+  font-size: 0.83rem;
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  max-width: 100%;
+}
+
+
+/* ========================
+   MINI MARKET PREVIEW
+   Compact live-price table in the left panel
+   ======================== */
+
+.ln-market-preview {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 1.4rem;
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .ln-market-preview {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.09);
+}
+
+.ln-market-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 0.9fr;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--ts-text-muted);
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+[data-theme="light"] .ln-market-header {
+  background: rgba(0,0,0,0.025);
+  border-bottom-color: rgba(0,0,0,0.07);
+}
+
+.ln-market-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 0.9fr;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  align-items: center;
+  transition: background var(--transition);
+}
+
+[data-theme="light"] .ln-market-row {
+  border-bottom-color: rgba(0,0,0,0.06);
+}
+
+.ln-market-row:last-child {
+  border-bottom: none;
+}
+
+.ln-market-row:hover {
+  background: rgba(255,255,255,0.025);
+}
+
+.ln-mr-sym {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ts-text-primary);
+  line-height: 1.2;
+}
+
+.ln-mr-name {
+  font-size: 0.63rem;
+  color: var(--ts-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.ln-mr-price {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ts-text-primary);
+  transition: color 0.4s ease;
+}
+
+.ln-mr-change {
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  white-space: nowrap;
+}
+
+.ln-mr-change.up   { color: var(--ts-green); }
+.ln-mr-change.down { color: var(--ts-red); }
+
+/* Flash animations */
+@keyframes lnFlashGreen {
+  0%, 100% { color: var(--ts-text-primary); }
+  50%       { color: var(--ts-green); }
+}
+@keyframes lnFlashRed {
+  0%, 100% { color: var(--ts-text-primary); }
+  50%       { color: var(--ts-red); }
+}
+.ln-flash-up   { animation: lnFlashGreen 0.5s ease; }
+.ln-flash-down { animation: lnFlashRed 0.5s ease; }
+
+
+/* ========================
+   TRUST BADGE
+   ======================== */
+
+.ln-trust {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.68rem;
+  color: var(--ts-text-muted);
+  opacity: 0.7;
+  margin-top: auto;  /* pushes to bottom of the panel */
+  padding-top: 1rem;
+}
+
+.ln-trust i {
+  color: var(--ts-green);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+
+/* ========================
+   RIGHT PANEL — form side
+   Tighter top padding since the form is shorter
+   ======================== */
+
+.ln-card .rg-panel-right .rg-form-wrap {
+  padding: 2rem 2rem;
+}
+
+@media (min-width: 992px) {
+  .ln-card .rg-panel-right .rg-form-wrap {
+    padding: 2.25rem 2.25rem;
+  }
+}
+
+/* Form title — slightly smaller than register */
+.ln-card .rg-form-title {
+  font-size: 1.4rem;
+}
+
+/* Tighter gap between fields — form is already short */
+.ln-card .rg-form {
+  gap: 0.75rem;
+}
+
+
+/* ========================
+   LABEL ROW
+   Label + "Forgot password?" inline
+   ======================== */
+
+.ln-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  /* label+forgot sit above the input, not inside .rg-field-group's gap */
+  margin-bottom: 0.3rem;
+}
+
+.ln-label-row .rg-label {
+  margin-bottom: 0;
+}
+
+.ln-forgot {
+  font-size: 0.73rem;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+/* ========================
+   REMEMBER ME
+   ======================== */
+
+.ln-remember-row {
+  margin-top: -0.1rem;
+}
+
+
+/* ========================
+   SUCCESS ALERT VARIANT
+   ======================== */
+
+.ln-alert-success {
+  background: rgba(16,185,129,0.08) !important;
+  border-color: rgba(16,185,129,0.25) !important;
+  color: var(--ts-green) !important;
+}
+
+
+/* ========================
+   SIGN-UP NUDGE
+   ======================== */
+
+.ln-signup-nudge {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ts-text-muted);
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--ts-card-border);
+}
