@@ -277,27 +277,6 @@
                   </li>
                 </ul>
 
-                <!-- Terms -->
-                <div class="rg-field-group rg-checkbox-group">
-                  <label class="rg-checkbox-label" for="id_terms">
-                    <input
-                      type="checkbox"
-                      id="id_terms"
-                      name="terms"
-                      class="rg-checkbox"
-                      required
-                      aria-required="true"
-                      aria-describedby="err-terms"
-                    />
-                    <span class="rg-checkbox-custom" aria-hidden="true"></span>
-                    I agree to the
-                    <a href="#" class="rg-link">Terms of Use</a>
-                    and
-                    <a href="#" class="rg-link">Privacy Policy</a>
-                  </label>
-                  <p class="rg-field-error" id="err-terms" role="alert" aria-hidden="true"></p>
-                </div>
-
                 <!-- Non-field errors (Django) -->
                 {% if form.non_field_errors %}
                 <div class="rg-form-alert" role="alert">
