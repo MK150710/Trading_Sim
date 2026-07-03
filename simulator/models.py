@@ -18,14 +18,14 @@ class Portfolio(models.Model):
         related_name="portfolio"
     )
 
+    STARTING_BALANCE = 100000
 
     current_balance = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=100000.00
+        default=STARTING_BALANCE
     )
 
-    STARTING_BALANCE = 100000
 
     created_at = models.DateTimeField(
         auto_now_add=True
@@ -35,6 +35,53 @@ class Portfolio(models.Model):
         auto_now=True
     )
 
+    def __str__(self):
+        return f"{self.user.username}'s Portfolio"
+
+class Stock(models.Model):
+
+    id=models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    symbol = models.CharField(
+        max_length=10,
+        unique=True,
+        db_index=True
+    )
+
+    company_name = models.CharField(
+        max_length=100,
+        db_index=True
+    )
+
+    current_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    exchange = models.CharField(
+        max_length=20,
+        default="NASDAQ"
+    )
+
+    previous_close = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    last_updated = models.DateTimeField(
+        auto_now=True
+    )
+
+    is_featured = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.symbol} - {self.company_name}"
+    
+
 class Holding(models.Model):
 
     id = models.UUIDField(
@@ -43,8 +90,10 @@ class Holding(models.Model):
         editable=False
     )
 
-    symbol = models.CharField(
-        max_length=8
+    stock = models.ForeignKey(
+        Stock,
+        on_delete=models.PROTECT,
+        related_name="holdings"
     )
     
     total_investment = models.DecimalField(
@@ -69,8 +118,6 @@ class Holding(models.Model):
 
     def save(self, *args, **kwargs):
 
-        self.symbol = self.symbol.strip().upper()
-
         if self.quantity <= 0 and self.pk:
             self.delete()
             return
@@ -84,10 +131,13 @@ class Holding(models.Model):
         
         constraints = [
             models.UniqueConstraint(
-                fields=["portfolio", "symbol"], 
-                name="unique_portfolio_symbol"
+                fields=["portfolio", "stock"], 
+                name="unique_portfolio_stock"
             )
         ]
+
+    def __str__(self):
+        return f"{self.portfolio.user.username} - {self.stock.symbol}"
 
 
 class Transaction(models.Model):
@@ -108,8 +158,10 @@ class Transaction(models.Model):
         related_name="transactions"
     )
 
-    symbol = models.CharField(
-        max_length=8
+    stock = models.ForeignKey(
+        Stock,
+        on_delete=models.PROTECT,
+        related_name="transactions"
     )
 
 
@@ -119,20 +171,6 @@ class Transaction(models.Model):
         default=TransactionType.BUY
     )
 
-    class Meta:
-        constraints = [
-
-            models.CheckConstraint(
-                condition=models.Q(transaction_type__in=['BUY', 'SELL']),
-                name='valid_transaction_type'
-            )
-        ]
-
-    def save(self, *args, **kwargs):
-
-        self.symbol = self.symbol.strip().upper()
-
-        super().save(*args, **kwargs)
 
     shares_traded = models.PositiveIntegerField()
 
@@ -155,6 +193,18 @@ class Transaction(models.Model):
         auto_now_add=True
     )
 
+    class Meta:
+        constraints = [
+
+            models.CheckConstraint(
+                condition=models.Q(transaction_type__in=['BUY', 'SELL']),
+                name='valid_transaction_type'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.transaction_type} {self.shares_traded} {self.stock.symbol}"
+    
 class Wishlist(models.Model):
 
     id = models.UUIDField(
@@ -169,25 +219,24 @@ class Wishlist(models.Model):
         related_name="wishlist"
     )
 
-    symbol = models.CharField(
-        max_length=8
+    stock = models.ForeignKey(
+        Stock,
+        on_delete=models.PROTECT,
+        related_name="wishlists"
     )
 
     added_at = models.DateTimeField(
         auto_now_add=True
     )
 
-    def save(self, *args, **kwargs):
-
-        self.symbol = self.symbol.strip().upper()
-
-        super().save(*args, **kwargs)
-
     class Meta:
         
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "symbol"], 
-                name="unique_user"
+                fields=["user", "stock"], 
+                name="unique_user_stock"
             )
         ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.stock.symbol}"
