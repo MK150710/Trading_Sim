@@ -48,9 +48,12 @@ Create Django Models for backend foundation of TradeSims
 
 ## Role of AI
 
-- For this section, AI only acted as a re-checker of syntax and certain spellings, while all codeblocks were written by me
+- AI was used as a reviewer and technical mentor to validate database design decisions, strengthen Django concepts, and help debug migration issues. 
+- All implementation and code integration were completed by me.
+
+---
 
 ## Next Steps
 
 - Connect backend to an API key to fetch live prices and make the site functional
-- Start building the dashboard to show all data 
+- Start building the dashboard to show all data
