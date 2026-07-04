@@ -47,7 +47,9 @@
               {% include "components/auth/Oauth.html" with text="login" %}
 
               <!-- Divider -->
-
+              {% if error %}
+                {% include "componenets/auth/error.html" with error=error %}
+              {% endif %}
               <!-- ======= LOGIN FORM ======= -->
               <!--
                 Django backend:
@@ -73,7 +75,7 @@
                 <!-- Username / Email -->
                 <div class="rg-field-group">
                   <label for="id_username" class="rg-label">
-                    Username or email
+                    Username
                     <span class="rg-required" aria-hidden="true">*</span>
                   </label>
                   <div class="rg-input-wrap">
@@ -83,7 +85,7 @@
                       id="id_username"
                       name="username"
                       class="rg-input {% if form.username.errors %}rg-input--error{% endif %}"
-                      placeholder="priya_trades or priya@example.com"
+                      placeholder="Eg. priya_trades"
                       autocomplete="username"
                       autofocus
                       required

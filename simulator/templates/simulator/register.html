@@ -43,7 +43,9 @@
 
               <!-- Divider -->
               
-
+              {% if error %}
+                {% include "componenets/auth/error.html" with error=error %}
+              {% endif %}
               <!-- ======= REGISTRATION FORM ======= -->
               <!--
                 Django backend: point action to your register URL,

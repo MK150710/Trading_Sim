@@ -61,7 +61,7 @@ function clearState(input) {
 function validateUsername() {
   const v = fieldUser.value.trim();
   if (!v) {
-    setError(fieldUser, 'Please enter your username or email.');
+    setError(fieldUser, 'Please enter your username.');
     return false;
   }
   setValid(fieldUser);
