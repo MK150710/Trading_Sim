@@ -73,3 +73,6 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect("home")
+
+def dashboard(request):
+    return render(request, "simulator/dashboard.html")
