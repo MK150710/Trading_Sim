@@ -31,10 +31,12 @@
         <div class="dropdown-panel" id="notifPanel"></div>
 
         <button class="profile-btn" id="profileTrigger">
-          <span class="avatar" id="profileAvatar">JS</span>
-          <span>Jordan</span>
+          <span class="avatar" id="profileAvatar">{{request.user|make_list|first|capfirst}}</span>
+          <span>{{ request.user|title }}</span>
           <span id="profileChevron"></span>
         </button>
-        <div class="dropdown-panel" id="profilePanel"></div>
+        <div class="dropdown-panel" id="profilePanel">
+          <a href="/logout" class="dropdown-item">Log Out</a>
+        </div>
       </div>
     </header>
