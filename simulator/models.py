@@ -240,3 +240,44 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.stock.symbol}"
+    
+
+class DailySnapshot(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="snapshots"
+    )
+
+    date = models.DateField()
+
+    net_worth = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    cash = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    investments = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "date"],
+                name="unique_snapshot_per_day"
+            )
+        ]   
+
+        ordering = ["-date"]
