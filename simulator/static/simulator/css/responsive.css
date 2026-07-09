@@ -1,0 +1,160 @@
+/* ==========================================================================
+   TradeSims — Responsive
+   Breakpoints: >1180 desktop · 861-1180 tablet (rail sidebar) · <=860 mobile
+   (off-canvas sidebar)
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------- */
+/* Tablet — sidebar becomes an icon-only rail automatically                */
+/* ---------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  .sidebar {
+    width: var(--sidebar-w-rail);
+  }
+
+  .sidebar__brand { padding: 0 var(--space-3); justify-content: center; }
+  .nav-item { justify-content: center; }
+  .nav-item.is-active::before { left: 0; }
+  .sidebar__collapse-btn { display: none; }
+
+  .sidebar__brand-name,
+  .nav-item__label {
+    display: none;
+  }
+
+  .hero__stats {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: var(--space-5);
+  }
+
+  .movers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Mobile — sidebar becomes an off-canvas drawer                          */
+/* ---------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .navbar__menu-btn {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(280px, 82vw);
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+    animation: drawerSlideIn var(--dur-base) var(--ease-out);
+  }
+
+  .sidebar__brand { justify-content: flex-start; padding: 0 var(--space-5); }
+  .nav-item { justify-content: flex-start; }
+  .nav-item.is-active::before { left: -12px; }
+  .sidebar__collapse-btn { display: none; }
+
+  .sidebar__brand-name,
+  .nav-item__label {
+    display: inline;
+  }
+
+  .sidebar-scrim.is-visible {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer-scrim);
+    background: var(--scrim);
+    animation: scrimIn var(--dur-base) var(--ease-out);
+  }
+
+  .navbar {
+    padding: 0 var(--space-4);
+    gap: var(--space-2);
+  }
+
+  .navbar__clock,
+  .search__kbd {
+    display: none;
+  }
+
+  .market-status span:not(.market-status__dot) {
+    display: none;
+  }
+
+  .dashboard {
+    padding: var(--space-4);
+    gap: var(--space-6);
+  }
+
+  .hero {
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .hero__stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-block__divider {
+    display: none;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trending-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .chart-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chart-container {
+    height: 280px;
+  }
+
+  .news-card__thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-btn span,
+  .profile-btn svg {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__greeting {
+    font-size: var(--text-xl);
+  }
+
+  .hero__stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .stat-block__value {
+    font-size: var(--text-xl);
+  }
+
+  .section-head__title {
+    font-size: var(--text-md);
+  }
+
+  .watchlist-card {
+    width: 168px;
+  }
+}

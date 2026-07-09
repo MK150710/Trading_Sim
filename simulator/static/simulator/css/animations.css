@@ -1,0 +1,93 @@
+/* ==========================================================================
+   TradeSims — Animation Keyframes & Utilities
+   ========================================================================== */
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulseDot {
+  0% { box-shadow: 0 0 0 0 var(--bull-soft); }
+  70% { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@keyframes heroGlow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes scrimIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Reveal-on-load utility ---------- */
+/* Elements start hidden; ui.js/animations.js toggles .is-visible via
+   IntersectionObserver (or immediately on first paint for above-the-fold
+   content) so the page doesn't pop in all at once. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.reveal.is-visible {
+  animation: fadeInUp var(--dur-slow) var(--ease-out) forwards;
+}
+
+/* Stagger children of a revealed grid — JS sets --stagger-index per child */
+.stagger-item {
+  opacity: 0;
+}
+
+.stagger-item.is-visible {
+  animation: fadeInUp var(--dur-base) var(--ease-out) forwards;
+  animation-delay: calc(var(--stagger-index, 0) * 45ms);
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Value flash — briefly tints a numeral when it updates (e.g. live quote tick) */
+.flash-up {
+  animation: flashUp 900ms var(--ease-out);
+}
+
+.flash-down {
+  animation: flashDown 900ms var(--ease-out);
+}
+
+@keyframes flashUp {
+  0% { background-color: var(--bull-soft); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flashDown {
+  0% { background-color: var(--bear-soft); }
+  100% { background-color: transparent; }
+}
