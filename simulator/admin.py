@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Portfolio, Stock, Holding, Transaction, Wishlist
+from .models import Portfolio, Stock, Holding, Transaction, Wishlist, DailySnapshot
 
 @admin.register(Portfolio)
 class PortfolioAdmin(admin.ModelAdmin):
@@ -118,4 +118,25 @@ class WishlistAdmin(admin.ModelAdmin):
     ordering = (
         "user__username",
         "stock__symbol"
+    )
+
+@admin.register(DailySnapshot)
+class DailySnapshotAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "user",
+        "date",
+        "net_worth",
+        "cash",
+        "investments",
+    )
+
+    search_fields = (
+        "user__username",
+        "user__email",
+    )
+
+    ordering = (
+        "-date",
+        "user__username",
     )
