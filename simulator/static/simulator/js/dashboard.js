@@ -326,6 +326,7 @@ async function renderTransactions() {
 
 async function renderNews() {
   const container = $('#newsContainer');
+  if (!container) return;
   container.innerHTML = skeletonCard(4);
   try {
     const news = await api.getNews();
