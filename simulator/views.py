@@ -8,6 +8,8 @@ from .models import Portfolio, Holding, Stock, Transaction, Wishlist, DailySnaps
 from django.utils import timezone
 import random
 from datetime import timedelta
+from .services.markets import markets
+from django.core.cache import cache
 # Create your views here.
 
 def home(request):
@@ -230,3 +232,14 @@ def get_portfolio_history(request):
 
     return JsonResponse(history_data, safe=False)
 
+
+@login_required
+def get_market_overview(request):
+
+    overview = cache.get("markets_overview")
+
+    if overview is None: 
+        overview = markets()
+        cache.set("markets_overview", overview, timeout=1800)
+
+    return JsonResponse(overview, safe=False)
