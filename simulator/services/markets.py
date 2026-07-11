@@ -1,8 +1,14 @@
-from datetime import datetime, timedelta
-from .base import client, get_daily_candles
+import yfinance as yf
 
-def create_sparkline_data(symbol, days=7):
-    return get_daily_candles(symbol, days)
+def get_daily_candles(symbol, days=7): 
+    ticker = yf.Ticker(symbol)
+    history = ticker.history(period=f"{days + 2}d")
+
+    if history.empty:
+        return []
+    
+    return history["Close"].tail(days).tolist()
+
 
 def markets():
     
@@ -17,15 +23,20 @@ def markets():
 
     for name, symbol in INDICES.items():
 
-        sparkline = create_sparkline_data(symbol, 7)
-        quote = client.quote(symbol)
+        sparkline = get_daily_candles(symbol, 7)
+
+        ticker = yf.Ticker(symbol)
+        history = ticker.history(period="2d")
+
+        current = history["Close"].iloc[-1]
+        previous = history["Close"].iloc[-2]
 
         data.append({
             "name" : name,
             "symbol" : symbol,
-            "price": quote["c"],
-            "change": quote["d"],
-            "changePercent": quote["dp"],
+            "price": current,
+            "change": current-previous,
+            "changePercent": ((current - previous) / previous) * 100,
             "sparkline" : sparkline
         })
 
