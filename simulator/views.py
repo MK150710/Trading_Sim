@@ -10,6 +10,7 @@ import random
 from datetime import timedelta
 from .services.markets import markets
 from django.core.cache import cache
+from .services.screening import get_screening
 # Create your views here.
 
 def home(request):
@@ -240,6 +241,35 @@ def get_market_overview(request):
 
     if overview is None: 
         overview = markets()
-        cache.set("markets_overview", overview, timeout=1800)
+        cache.set("markets_overview", overview, timeout=86400)
 
     return JsonResponse(overview, safe=False)
+
+@login_required
+def get_movers(request):
+    losers = get_screening("day_losers")
+    gainers = get_screening("day_gainers")
+
+    def normalize(stocks):
+        data_list = []
+
+        for stock in stocks:
+            data_list.append({
+                "symbol": stock["symbol"],
+                "name": stock["shortName"],
+                "price": stock["regularMarketPrice"],
+                "change": stock["regularMarketChange"],
+                "changePercent": stock["regularMarketChangePercent"],
+            })
+
+        return data_list
+    
+    gainers = normalize(gainers)
+    losers = normalize(losers)
+
+    final_data = {
+        "gainers" : gainers,
+        "losers" : losers
+    }
+
+    return JsonResponse(final_data)
