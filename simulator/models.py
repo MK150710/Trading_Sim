@@ -67,6 +67,8 @@ class Stock(models.Model):
         default="NASDAQ"
     )
 
+    sparkline = models.JSONField(default=list)
+
     previous_close = models.DecimalField(
         max_digits=12,
         decimal_places=2
