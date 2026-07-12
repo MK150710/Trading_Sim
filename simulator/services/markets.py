@@ -1,14 +1,5 @@
 import yfinance as yf
-
-def get_daily_candles(symbol, days=7): 
-    ticker = yf.Ticker(symbol)
-    history = ticker.history(period=f"{days + 2}d")
-
-    if history.empty:
-        return []
-    
-    return history["Close"].tail(days).tolist()
-
+from .base import get_daily_candles
 
 def markets():
     
