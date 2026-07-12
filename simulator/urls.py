@@ -14,5 +14,6 @@ urlpatterns = [
     path("api/transactions", views.get_transactions, name="transaction_api"),
     path("api/portfolio/history", views.get_portfolio_history, name="portfolio_history"),
     path("api/market", views.get_market_overview, name="market_overview_api"),
-    path("api/movers", views.get_movers, name="market_movers")
+    path("api/movers", views.get_movers, name="market_movers"),
+    path("api/trending", views.get_trending, name="trending_markets")
 ]
