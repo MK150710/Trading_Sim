@@ -10,7 +10,8 @@ import random
 from datetime import timedelta
 from .services.markets import markets
 from django.core.cache import cache
-from .services.screening import get_screening
+from .services.base import get_screening
+from .services.trending import get_trending_data
 # Create your views here.
 
 def home(request):
@@ -152,16 +153,18 @@ def get_watchlist(request):
         else:
             change_percent = 0
 
-        base = data.current_price
-        sparkline = [
-            round(float(base) + random.uniform(-2, 2), 2)
-            for _ in range(9)
-        ]
-
-        sparkline.append(base)
+        sparkline = data.sparkline
+        if sparkline is None:
+            base = data.current_price
+            sparkline = [
+                round(float(base) + random.uniform(-2, 2), 2)
+                for _ in range(9)
+            ]
+            sparkline.append(base)
         
         data_dict = {
             "symbol" : data.symbol,
+            "name" : data.company_name,
             "price" : data.current_price,
             "changePercent" : change_percent,
             "sparkline" : sparkline
@@ -273,3 +276,12 @@ def get_movers(request):
     }
 
     return JsonResponse(final_data)
+
+def get_trending(request):
+    market_data = cache.get("trending_stocks")
+
+    if market_data is None: 
+        market_data = get_trending_data()
+        cache.set("trending_stocks", market_data, timeout=43200)
+
+    return JsonResponse(market_data, safe=False)
