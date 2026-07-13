@@ -259,16 +259,9 @@ export function initDropdown(triggerId, panelId) {
  * Clock + market-status pill (based on US exchange hours, America/New_York)
  * ========================================================================== */
 
-function isMarketOpen(now) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York', hour12: false,
-    weekday: 'short', hour: 'numeric', minute: 'numeric',
-  }).formatToParts(now);
-  const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
-  const day = map.weekday;
-  const minutes = parseInt(map.hour, 10) * 60 + parseInt(map.minute, 10);
-  const isWeekday = !['Sat', 'Sun'].includes(day);
-  return isWeekday && minutes >= 9 * 60 + 30 && minutes < 16 * 60;
+function isMarketOpen(date = new Date()) {
+  const hour = date.getHours();
+  return hour >= 9 && hour < 23;
 }
 
 export function initClock() {
