@@ -12,10 +12,23 @@ from .services.markets import markets
 from django.core.cache import cache
 from .services.base import get_screening
 from .services.trending import get_trending_data
+from .static.simulator.top_stocks import LANDING_STOCK_POOL
+import random
 # Create your views here.
 
 def home(request):
-    return render(request, "simulator/index.html")
+
+    stocks = {}
+    symbols = ["NVDA", "AAPL", "TSLA"]
+
+    for symbol in symbols:
+        stock = Stock.objects.get(symbol=symbol)
+        change = round(float((stock.current_price - stock.previous_close) / stock.previous_close) * 100, 2)
+        stocks[symbol] = {
+            "price" : float(stock.current_price),
+            "change" : change
+        }
+    return render(request, "simulator/index.html", {"stock":stocks})
 
 def register(request):
     if request.method == "GET":
@@ -138,9 +151,6 @@ def dashboard_api(request):
 
 @login_required
 def get_watchlist(request):
-    print("Request user:", request.user)
-    print("Authenticated:", request.user.is_authenticated)
-
     user = request.user
 
     watchlist = Wishlist.objects.filter(user=user)
@@ -285,3 +295,22 @@ def get_trending(request):
         cache.set("trending_stocks", market_data, timeout=43200)
 
     return JsonResponse(market_data, safe=False)
+
+def landing_page_market(request):
+    symbols = random.sample(LANDING_STOCK_POOL, 5)
+    landing_data = []
+    for symbol in symbols:
+        print(symbol)
+        stock = Stock.objects.get(symbol=symbol)
+        change_p = round(float((stock.current_price - stock.previous_close) / stock.previous_close) * 100, 2)
+
+        landing_data.append({
+                "symbol": stock.symbol,
+                "name" : stock.company_name,
+                "current_price" : float(stock.current_price),
+                "change_percent" : change_p,
+                "volume" : stock.volume,
+                "sparkline" : stock.sparkline
+        })
+
+    return JsonResponse(landing_data, safe=False)
