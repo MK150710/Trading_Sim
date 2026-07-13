@@ -78,6 +78,8 @@ class Stock(models.Model):
         auto_now=True
     )
 
+    volume = models.BigIntegerField(default=10000000)
+
     is_featured = models.BooleanField(default=False)
 
     def __str__(self):
