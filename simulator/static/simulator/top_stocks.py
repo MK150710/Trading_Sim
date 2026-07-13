@@ -44,3 +44,13 @@ TOP_STOCKS = [
     "SPY", "QQQ", "DIA", "VOO", "VTI",
     "IWM", "ARKK", "XLK", "XLF", "XLE"
 ]
+
+LANDING_STOCK_POOL = [
+    "AAPL",   "MSFT",   "NVDA",   
+    "AMZN",   "GOOGL",  "META",   
+    "TSLA",   "JPM",    "PEP",
+    "V",      "MA",     "NFLX",   
+    "COST",   "WMT",    "ORCL",   
+    "AMD",    "CRM",    "ABBV",   
+    "KO"   
+]
