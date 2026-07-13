@@ -69,42 +69,14 @@ const sectionObserver = new IntersectionObserver(entries => {
 
 sections.forEach(s => sectionObserver.observe(s));
 
-
-/* ========================
-   MARKET DATA SIMULATION
-   ======================== */
-
-/** Baseline stock data */
-const stocks = [
-  { sym: 'AAPL',  name: 'Apple Inc.',         price: 213.07, color: '#6366f1', bg: 'rgba(99,102,241,0.15)' },
-  { sym: 'NVDA',  name: 'NVIDIA Corporation',  price: 875.32, color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-  { sym: 'TSLA',  name: 'Tesla Inc.',          price: 182.63, color: '#ef4444', bg: 'rgba(239,68,68,0.15)'  },
-  { sym: 'MSFT',  name: 'Microsoft Corp.',     price: 415.89, color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  { sym: 'AMZN',  name: 'Amazon.com Inc.',     price: 191.54, color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
-];
-
-// Extend each stock with history for sparklines
-stocks.forEach(s => {
-  s.history  = generateHistory(s.price, 20);
-  s.change   = 0;
-  s.changePct = 0;
-  s.volume   = randomVolume();
-});
-
-/** Generate fake historical prices */
-function generateHistory(base, points) {
-  const arr = [];
-  let p = base;
-  for (let i = 0; i < points; i++) {
-    p = p * (1 + (Math.random() - 0.5) * 0.012);
-    arr.push(+p.toFixed(2));
-  }
-  return arr;
-}
-
-function randomVolume() {
-  const v = Math.floor(Math.random() * 90 + 10);
-  return v + 'M';
+function formatVolume(volume) {
+    if (volume >= 1_000_000_000)
+        return (volume / 1_000_000_000).toFixed(1) + "B";
+    if (volume >= 1_000_000)
+        return (volume / 1_000_000).toFixed(1) + "M";
+    if (volume >= 1_000)
+        return (volume / 1_000).toFixed(1) + "K";
+    return volume.toString();
 }
 
 /** Render the market rows */
@@ -135,7 +107,7 @@ function renderMarketRows() {
       </div>
       <div class="ts-mr-price" id="price-${i}">${priceStr}</div>
       <div class="ts-mr-change ${cls}" id="change-${i}">${arrow}${pctStr}</div>
-      <div class="ts-mr-vol d-none d-md-block">${s.volume}</div>
+      <div class="ts-mr-vol d-none d-md-block">${formatVolume(s.volume)}</div>
       <div class="d-none d-lg-block">
         <canvas class="ts-sparkline" id="spark-${i}" width="90" height="36" aria-label="${s.sym} price trend"></canvas>
       </div>
@@ -198,44 +170,35 @@ function drawSparkline(index) {
   ctx.stroke();
 }
 
-/** Simulate a live price tick */
-function tickPrices() {
-  stocks.forEach((s, i) => {
-    const delta    = (Math.random() - 0.48) * s.price * 0.004;
-    s.price        = Math.max(0.01, s.price + delta);
-    s.change       = s.price - s.history[0];
-    s.changePct    = (s.change / s.history[0]) * 100;
+let stocks = [];
 
-    // Push new price into history, drop oldest
-    s.history.push(+s.price.toFixed(2));
-    s.history.shift();
+const avatarColors = [
+  { bg: "rgba(99,102,241,0.15)", color: "#6366f1" }, 
+  { bg: "rgba(16,185,129,0.15)", color: "#10b981" }, 
+  { bg: "rgba(239,68,68,0.15)", color: "#ef4444" },  
+  { bg: "rgba(59,130,246,0.15)", color: "#3b82f6" }, 
+  { bg: "rgba(245,158,11,0.15)", color: "#f59e0b" }, 
+];
 
-    // Update DOM
-    const priceEl  = document.getElementById('price-' + i);
-    const changeEl = document.getElementById('change-' + i);
-    if (!priceEl || !changeEl) return;
+async function loadMarketRows() {
+  const response = await fetch("/api/landing-market");
+  const data = await response.json();
 
-    const isUp    = delta > 0;
-    const arrow   = isUp ? '<i class="bi bi-arrow-up-short"></i>' : '<i class="bi bi-arrow-down-short"></i>';
-    const cls     = isUp ? 'up' : 'down';
-    const pctStr  = (s.changePct >= 0 ? '+' : '') + s.changePct.toFixed(2) + '%';
+  stocks = data.map((stock, i) => ({
+    sym: stock.symbol,
+    name: stock.name,
+    price:stock.current_price,
+    changePct : stock.change_percent,
+    volume: stock.volume,
+    history: stock.sparkline,
+    ...avatarColors[i % avatarColors.length]
+  }))
 
-    // Flash animation
-    priceEl.classList.remove('flash-up', 'flash-down');
-    void priceEl.offsetWidth; // force reflow
-    priceEl.classList.add(isUp ? 'flash-up' : 'flash-down');
+  renderMarketRows()
 
-    priceEl.textContent  = '$' + s.price.toFixed(2);
-    changeEl.className   = 'ts-mr-change ' + cls;
-    changeEl.innerHTML   = arrow + pctStr;
-
-    // Redraw sparkline
-    drawSparkline(i);
-  });
 }
 
-renderMarketRows();
-setInterval(tickPrices, 2200);
+loadMarketRows();
 
 
 /* ========================
