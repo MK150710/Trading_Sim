@@ -17,20 +17,20 @@
 
     <div class="ts-floating-card ts-float-1" aria-hidden="true">
         <div class="ts-fc-ticker">NVDA</div>
-        <div class="ts-fc-price">$875.32</div>
-        <div class="ts-fc-change positive"><i class="bi bi-arrow-up-short"></i>+4.21%</div>
+        <div class="ts-fc-price">${{ stock.NVDA.price }}</div>
+        <div class="ts-fc-change {% if stock.NVDA.change >= 0 %}positive{% else %}negative{% endif %}"><i class="bi bi-arrow-up-short"></i>{{ stock.NVDA.change }}%</div>
     </div>
 
-    <div class="ts-floating-card ts-float-1" aria-hidden="true">
+    <div class="ts-floating-card ts-float-2" aria-hidden="true">
         <div class="ts-fc-ticker">AAPL</div>
-        <div class="ts-fc-price">$213.07</div>
-        <div class="ts-fc-change positive"><i class="bi bi-arrow-up-short"></i>+4.21%</div>
+        <div class="ts-fc-price">${{stock.AAPL.price}}</div>
+        <div class="ts-fc-change {% if stock.AAPL.change >= 0 %}positive{% else %}negative{% endif %}"><i class="bi bi-arrow-up-short"></i>{{stock.AAPL.change}}%</div>
     </div>
 
-    <div class="ts-floating-card ts-float-1" aria-hidden="true">
+    <div class="ts-floating-card ts-float-3" aria-hidden="true">
         <div class="ts-fc-ticker">TSLA</div>
-        <div class="ts-fc-price">$182.63</div>
-        <div class="ts-fc-change positive"><i class="bi bi-arrow-up-short"></i>+4.21%</div>
+        <div class="ts-fc-price">${{stock.TSLA.price}}</div>
+        <div class="ts-fc-change {% if stock.TSLA.change >= 0 %}positive{% else %}negative{% endif %}"><i class="bi bi-arrow-up-short"></i>{{stock.TSLA.change}}%</div>
     </div>
 
     <div class="container ts-hero-content">
