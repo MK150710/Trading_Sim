@@ -1,6 +1,4 @@
-import yfinance as yf
-from .base import get_daily_candles
-
+from simulator.models import Stock
 def markets():
     
     INDICES = {
@@ -14,21 +12,17 @@ def markets():
 
     for name, symbol in INDICES.items():
 
-        sparkline = get_daily_candles(symbol, 7)
+        stock = Stock.objects.get(symbol=symbol)
 
-        ticker = yf.Ticker(symbol)
-        history = ticker.history(period="2d")
-
-        current = history["Close"].iloc[-1]
-        previous = history["Close"].iloc[-2]
+        change = round(((stock.current_price - stock.previous_close) / stock.previous_close) * 100, 2)
 
         data.append({
             "name" : name,
             "symbol" : symbol,
-            "price": current,
-            "change": current-previous,
-            "changePercent": ((current - previous) / previous) * 100,
-            "sparkline" : sparkline
+            "price": stock.current_price,
+            "change": stock.current_price - stock.previous_close,
+            "changePercent": change,
+            "sparkline" : stock.sparkline
         })
 
     return data
