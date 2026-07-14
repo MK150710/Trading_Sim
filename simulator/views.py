@@ -18,18 +18,42 @@ import random
 
 def home(request):
 
-    stocks = {}
-    symbols = ["NVDA", "AAPL", "TSLA"]
+    hero_symbols = {"NVDA", "AAPL", "TSLA"}
 
-    for symbol in symbols:
-        stock = Stock.objects.get(symbol=symbol)
-        change = round(float((stock.current_price - stock.previous_close) / stock.previous_close) * 100, 2)
-        stocks[symbol] = {
+    ticker_order = [
+        "AAPL", "NVDA", "TSLA", "MSFT", "AMZN", "GOOGL",
+        "META", "JPM", "V", "NFLX", "AMD"
+    ]
+
+    all_symbols = set(ticker_order)
+
+    stocks = Stock.objects.filter(symbol__in=all_symbols)
+    stock_map = {stock.symbol: stock for stock in stocks}
+
+    hero = {}
+    ticker = []
+
+    for symbol in ticker_order:
+        stock = stock_map[symbol]
+
+        change = float(round(((stock.current_price - stock.previous_close) / stock.previous_close) * 100, 2))
+
+        if symbol in hero_symbols:
+            hero[symbol] = {
+                "price" : float(stock.current_price),
+                "change" : change,
+            }
+
+        ticker.append({
+            "sym" : symbol,
             "price" : float(stock.current_price),
-            "change" : change
-        }
-    return render(request, "simulator/index.html", {"stock":stocks})
+            "pct" : change
+        })
 
+    return render(request, "simulator/index.html", {
+        "stock" : hero,
+        "ticker" : ticker
+    })
 def register(request):
     if request.method == "GET":
         return render(request, "simulator/register.html")
@@ -300,7 +324,6 @@ def landing_page_market(request):
     symbols = random.sample(LANDING_STOCK_POOL, 5)
     landing_data = []
     for symbol in symbols:
-        print(symbol)
         stock = Stock.objects.get(symbol=symbol)
         change_p = round(float((stock.current_price - stock.previous_close) / stock.previous_close) * 100, 2)
 
