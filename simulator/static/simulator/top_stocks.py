@@ -21,7 +21,7 @@ TOP_STOCKS = [
     # Consumer
     "COST", "WMT", "HD", "LOW", "MCD",
     "NKE", "SBUX", "DIS", "NFLX", "KO",
-    "PEP", "PG", "CMG",
+    "PEP", "PG", "CMG", "BRK-B",
 
     # Industrials
     "CAT", "GE", "RTX", "LMT", "HON",
