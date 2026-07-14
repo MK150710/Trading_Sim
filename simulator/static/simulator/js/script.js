@@ -204,45 +204,38 @@ loadMarketRows();
 /* ========================
    TICKER BAR
    ======================== */
+function buildTicker(tickerSymbols) {
+    const track = document.getElementById("tickerTrack");
+    if (!track) return;
 
-const tickerSymbols = [
-  { sym: 'AAPL',  price: 213.07, pct: +1.84 },
-  { sym: 'NVDA',  price: 875.32, pct: +4.21 },
-  { sym: 'TSLA',  price: 182.63, pct: -2.17 },
-  { sym: 'MSFT',  price: 415.89, pct: +0.93 },
-  { sym: 'AMZN',  price: 191.54, pct: +2.35 },
-  { sym: 'GOOGL', price: 172.82, pct: +1.07 },
-  { sym: 'META',  price: 503.14, pct: +0.61 },
-  { sym: 'BRK.B', price: 371.20, pct: -0.42 },
-  { sym: 'JPM',   price: 194.33, pct: +1.23 },
-  { sym: 'V',     price: 274.90, pct: +0.77 },
-  { sym: 'NFLX',  price: 618.44, pct: -1.05 },
-  { sym: 'AMD',   price: 162.73, pct: +3.14 },
-];
+    const items = [...tickerSymbols, ...tickerSymbols];
 
-function buildTicker() {
-  const track = document.getElementById('tickerTrack');
-  if (!track) return;
+    track.innerHTML = items.map(t => {
+        const pct = Number(t.pct);
 
-  // Duplicate for seamless loop
-  const items = [...tickerSymbols, ...tickerSymbols];
+        const up = pct >= 0;
+        const arrow = up ? "▲" : "▼";
+        const cls = up ? "up" : "down";
+        const sign = up ? "+" : "";
 
-  track.innerHTML = items.map(t => {
-    const up     = t.pct >= 0;
-    const arrow  = up ? '▲' : '▼';
-    const cls    = up ? 'up' : 'down';
-    const sign   = up ? '+' : '';
-    return `
-      <span class="ts-tick-item">
-        <span class="ts-tick-sym">${t.sym}</span>
-        <span class="ts-tick-price">$${t.price.toFixed(2)}</span>
-        <span class="ts-tick-chg ${cls}">${arrow} ${sign}${t.pct.toFixed(2)}%</span>
-      </span>
-    `;
-  }).join('');
+        return `
+            <span class="ts-tick-item">
+                <span class="ts-tick-sym">${t.sym}</span>
+                <span class="ts-tick-price">$${Number(t.price).toFixed(2)}</span>
+                <span class="ts-tick-chg ${cls}">
+                    ${arrow} ${sign}${pct.toFixed(2)}%
+                </span>
+            </span>
+        `;
+    }).join("");
 }
 
-buildTicker();
+const tickerData = document.getElementById("ticker-data");
+
+if (tickerData) {
+    const tickerSymbols = JSON.parse(tickerData.textContent);
+    buildTicker(tickerSymbols);
+}
 
 
 /* ========================
