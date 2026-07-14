@@ -11,3 +11,7 @@
     {% include "components/home/contact.html" %}
 
 {% endblock %}
+
+{% block extra_js %}
+{{ ticker|json_script:"ticker-data" }}
+{% endblock %}
