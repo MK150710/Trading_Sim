@@ -19,9 +19,9 @@ def markets():
         data.append({
             "name" : name,
             "symbol" : symbol,
-            "price": stock.current_price,
-            "change": stock.current_price - stock.previous_close,
-            "changePercent": change,
+            "price": float(stock.current_price),
+            "change": float(stock.current_price - stock.previous_close),
+            "changePercent": float(change),
             "sparkline" : stock.sparkline
         })
 
