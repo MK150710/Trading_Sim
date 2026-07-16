@@ -292,3 +292,24 @@ export function initGreeting() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   el.textContent = greeting;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const profileTrigger = document.getElementById('profileTrigger');
+  const profilePanel = document.getElementById('profilePanel');
+
+  profileTrigger.addEventListener('click', (event) => {
+    event.stopPropagation();
+    profilePanel.classList.toggle('is-active');
+  });
+
+  window.addEventListener('click', (event) => {
+    event.stopPropagation();
+    profile.classList.toggle('is-active');
+  })
+
+  window.addEventListener('click', (event) => {
+    if (!profileTrigger.contains(event.target) && !profile.contains(event.target)) {
+      profilePanel.classList.remove('is-active');
+    }
+  });
+})

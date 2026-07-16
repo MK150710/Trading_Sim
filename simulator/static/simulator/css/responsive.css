@@ -158,3 +158,53 @@
     width: 168px;
   }
 }
+.profile-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+#profilePanel {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 160px;
+
+  background-color: #1e1e1e;
+  border: 1px solid rgba(242, 238, 238, 0.867);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(2, 115, 138, 0.346);
+  padding: 6px 0;
+  z-index: 100;
+
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+#profilePanel.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 10px 16px;
+  color: #1eabc4;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.15s ease;
+}
+
+.dropdown-item:hover {
+  color: #ff0101;
+}
+
+.profile-dropdown-container:has(.is-active) #profileChevron {
+  transform: rotate(180deg);
+}
+#profileChevron {
+  transition: transform 0.2s ease;
+}

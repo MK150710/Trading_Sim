@@ -1,42 +1,50 @@
 <header class="navbar">
-      <button class="navbar__menu-btn" id="navMenuBtn"></button>
+  <button class="navbar__menu-btn" id="navMenuBtn"></button>
 
-      <div class="navbar__search search" id="searchRoot">
-        <div class="search__field">
-          <span id="searchIcon"></span>
-          <input
-            type="text"
-            class="search__input"
-            id="searchInput"
-            placeholder="Search stocks, e.g. AAPL"
-            autocomplete="off"
-          >
-          <kbd class="search__kbd">/</kbd>
+  <div class="navbar__search search" id="searchRoot">
+    <div class="search__field">
+      <span id="searchIcon"></span>
+      <input
+        type="text"
+        class="search__input"
+        id="searchInput"
+        placeholder="Search stocks, e.g. AAPL"
+        autocomplete="off"
+      >
+      <kbd class="search__kbd">/</kbd>
+    </div>
+    <div class="search__dropdown" id="searchDropdown" hidden></div>
+  </div>
+
+  <div class="navbar__right">
+    
+    <div class="market-status" id="marketStatus">
+      <span class="market-status__dot"></span>
+      <span id="marketStatusLabel">Market Closed</span>
+    </div>
+
+    <span class="navbar__clock" id="navClock"></span>
+
+    <div class="notif-dropdown-container" style="position: relative;">
+      <button class="icon-btn" id="notifTrigger">
+        <span id="bellIcon"></span>
+        <span class="icon-btn__badge"></span>
+      </button>
+      <div class="dropdown-panel" id="notifPanel">
         </div>
-        <div class="search__dropdown" id="searchDropdown" hidden></div>
+    </div>
+
+    <div class="profile-dropdown-container">
+      <button class="profile-btn" id="profileTrigger">
+        <span class="avatar" id="profileAvatar">{{ request.user|make_list|first|capfirst }}</span>
+        <span>{{ request.user|title }}</span>
+        <span id="profileChevron"></span>
+      </button>
+      
+      <div class="dropdown-panel" id="profilePanel">
+        <a href="/logout" class="dropdown-item">Log Out</a>
       </div>
+    </div>
 
-      <div class="navbar__right">
-        <div class="market-status" id="marketStatus">
-          <span class="market-status__dot"></span>
-          <span id="marketStatusLabel">Market Closed</span>
-        </div>
-
-        <span class="navbar__clock" id="navClock"></span>
-
-        <button class="icon-btn" id="notifTrigger">
-          <span id="bellIcon"></span>
-          <span class="icon-btn__badge"></span>
-        </button>
-        <div class="dropdown-panel" id="notifPanel"></div>
-
-        <button class="profile-btn" id="profileTrigger">
-          <span class="avatar" id="profileAvatar">{{request.user|make_list|first|capfirst}}</span>
-          <span>{{ request.user|title }}</span>
-          <span id="profileChevron"></span>
-        </button>
-        <div class="dropdown-panel" id="profilePanel">
-          <a href="/logout" class="dropdown-item">Log Out</a>
-        </div>
-      </div>
-    </header>
+  </div>
+</header>
