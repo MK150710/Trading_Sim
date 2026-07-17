@@ -1,18 +1,3 @@
-/**
- * ui.js
- * ---------------------------------------------------------------------------
- * Generic UI chrome shared by every section: formatting, the inline icon
- * set, stock-logo placeholders, skeleton/empty/error state templates, and
- * the sidebar / dropdown / clock behaviors. Nothing here knows about
- * StockAPI or any specific section — it only ever touches the DOM it's
- * handed or returns markup strings.
- * ---------------------------------------------------------------------------
- */
-
-/* ============================================================================
- * DOM shorthands
- * ========================================================================== */
-
 export const $ = (selector, scope = document) => scope.querySelector(selector);
 export const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
@@ -313,3 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 })
+
+const navItems = document.querySelectorAll(".nav-item");
+
+navItems.forEach(item => {
+    item.addEventListener("click", () => {
+        navItems.forEach(i => i.classList.remove("is-active"));
+        item.classList.add("is-active");
+    });
+});
