@@ -1,0 +1,40 @@
+<section class="ts-section reveal" aria-label="Financial information">
+    <div class="ts-section__head">
+        <div class="ts-section__title">Financials<small>Quarterly</small></div>
+    </div>
+
+    <div id="financials-skeleton">
+        <div class="sk" style="height:160px;margin-bottom:16px"></div>
+        <div class="sk" style="height:120px"></div>
+    </div>
+    <div id="financials-content" style="display: none">
+        <div class="ts-fin-tabs">
+            <button data-metric="revenue" class="is-active">Revenue</button>
+            <button data-metric="netIncome">Net Income</button>
+        </div>
+
+        <div id="fin-bars" class="ts-fin-bars"></div>
+        <table class="ts-fin-table">
+            <thead>
+                <tr>
+                    <th>
+                        Quarter
+                    </th>
+                    <th>
+                        Revenue
+                    </th>
+                    <th>
+                        Net Income
+                    </th>
+                    <th>
+                        EPS
+                    </th>
+                    <th>
+                        Gross Margin
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="fin-table-body"></tbody>
+        </table>
+    </div>
+</section>
