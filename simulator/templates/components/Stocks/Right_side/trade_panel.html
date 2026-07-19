@@ -1,0 +1,48 @@
+<section class="ts-section reveal ts-trade-panel" aria-label="Buy and sell">
+    <div id="trade-skeleton">
+        <div class="sk" style="height:32px;margin-bottom:20px"></div>
+        <div class="sk" style="height:40px;margin-bottom:16px"></div>
+        <div class="sk" style="height:40px;margin-bottom:16px"></div>
+        <div class="sk" style="height:40px;margin-bottom:16px"></div>
+        <div class="sk" style="height:80px;margin-bottom:16px"></div>
+        <div class="sk" style="height:44px"></div>
+    </div>
+    <div id="trade-content" style="display:none">
+        <div class="ts-trade-panel__price">
+            <span class="ts-section__title">Trade</span>
+            <span id="trade-price" class="amt tabular"></span>
+        </div>
+        <div class="ts-segmented">
+            <button id="seg-buy" class="buy is-active">Buy</button>
+            <button id="seg-sell" class="sell">Sell</button>
+        </div>
+        <div class="ts-field">
+            <label for="trade-order-type">Order type</label>
+            <select id="trade-order-type">
+                <option value="market">Market Order</option>
+                <option value="limit">Limit Order</option>
+            </select>
+        </div>
+        <div id="trade-limit-field" class="ts-field" style="display:none">
+            <label for="trade-limit-price">Limit price</label>
+            <div class="ts-qty"><input id="trade-limit-price" type="number" min="0" step="0.01" value="0.00"></div>
+        </div>
+        <div class="ts-field">
+            <label for="trade-qty-input">Quantity (shares)</label>
+            <div class="ts-qty">
+                <button id="trade-qty-minus" type="button" aria-label="Decrease quantity">−</button>
+                <input id="trade-qty-input" type="number" min="1" step="1" value="1" class="tabular">
+                <button id="trade-qty-plus" type="button" aria-label="Increase quantity">+</button>
+            </div>
+        </div>
+        <div class="ts-trade-summary">
+            <div class="row"><span>Estimated cost</span><span id="trade-est-cost" class="val tabular"></span></div>
+            <div class="row"><span>Buying power</span><span id="trade-buying-power" class="val tabular"></span></div>
+            <div class="row total"><span>Cash remaining</span><span id="trade-cash-remaining" class="val tabular"></span></div>
+        </div>
+            <div id="trade-error" class="ts-field-error"></div>
+        <div class="ts-trade-actions">
+            <button id="trade-submit" class="btn btn-buy">Buy AAPL</button>
+        </div>
+    </div>
+</section>
