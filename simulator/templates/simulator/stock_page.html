@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AAPL · Apple Inc. — TradeSims</title>
+        <meta name="description" content="Real-time paper trading stock details on TradeSims.">
+        <meta name="theme-color" content="#F5F7FB">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+        <script>
+            (function () {
+                var saved = localStorage.getItem('tradesims:theme');
+                var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            })();
+        </script>
+    </head>
+
+    <body>
+        {% include "components/Stocks/navbar.html" %}
+
+        <main class="ts-page">
+
+            <div class="ts-breadcrumb">
+                <a href="/">Home</a>
+                <span>/</span>
+                <a href="/markets">Markets</a>
+                <span>/</span>
+                <span id="breadcrumb-symbol" style="color:var(--color-text-secondary);font-weight:600">AAPL</span>
+            </div>
+
+            {% include "components/Stocks/stock_head.html"}
+
+            <div class="ts-grid">
+                <div class="ts-main-col">
+                    
+                    {% include "components/Stocks/Left_side/chart.html" %}
+                    {% include "components/Stocks/Left_side/company_overview.html" %}
+                    {% include "components/Stocks/Left_side/statistics.html" %}
+                    {% include "components/Stocks/Left_side/financials.html" %}
+                    {% include "components/Stocks/Left_side/news.html" %}
+                    {% include "components/Stocks/Left_side/order_history.html" %}
+                </div>
+
+                <aside class="ts-rail">
+
+                    {% include "components/Stocks/Right_side/trade_panel.html" %}
+                    {% include "components/Stocks/Right_side/ownership_details.html" %}
+                    {% include "components/Stocks/Right_side/related_stocks.html" %}
+                </aside>
+            </div>
+        </main>
+
+        <div id="toast-stack" class="ts-toast-stack" aria-live="polite"></div>
+    </body>
+</html>
