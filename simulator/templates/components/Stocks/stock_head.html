@@ -1,0 +1,45 @@
+<section class="ts-section reveal" style="margin-bottom:var(--sp-6)" aria-label="Stock header">
+    <div id="header-skeleton">
+        <div class="ts-stock-header">
+            <div class="ts-stock-header__id">
+                <div class="sk" style="width:56px;height:56px;border-radius:var(--r-md)"></div>
+                <div>
+                    <div class="sk" style="width:200px;height:24px;margin-bottom:8px"></div>
+                    <div class="sk" style="width:140px;height:14px;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="sk" style="width:150px;height:38px;margin-bottom:8px;margin-left:auto"></div>
+                <div class="sk" style="width:110px;height:16px;margin-left:auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="header-content" style="display: none;">
+        <div class="ts-stock-header">
+            <div class="ts-stock-header__id">
+                <div id="stock-logo" class="ts-stock-header__logo">AA</div>
+                <div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <h1 id="stock-name" class="ts-stock-header__name">Apple Inc.</h1>
+                        <button id="watchlist-btn" class="ts-watch-btn" aria-pressed="false" aria-label="Add to watchlist" title="Add to watchlist">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.8 7.1-.7Z" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+
+                    <div id="stock-symbol-exchange" class="ts-stock-header__sub">AAPL. NASDAQ</div>
+                </div>
+            </div>
+
+            <div class="ts-price-block">
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:2px">
+                    <span id="market-status" class="badge badge-live"><span class="dot"></span> Market Open</span>
+                </div>
+                <div id="header-price" class="ts-price-block__price tabular">$214.00</div>
+                <div id="header-delta" class="ts-price-block__delta text-gain"></div>
+                <div id="header-updated" class="ts-price-block__meta">As of just now</div>
+            </div>
+        </div>
+    </div>
+</section>
