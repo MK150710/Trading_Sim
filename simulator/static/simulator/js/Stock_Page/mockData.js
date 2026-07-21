@@ -223,5 +223,69 @@
     // conpany overview
     function getCompanyOverview(symbol) {
         const s = getStock(symbol);
+        const descTemplates = [
+            `${s.name} operates in the ${s.industry.toLowerCase()} space within the broader ${s.sector.toLowerCase()} sector, serving customers worldwide with a focus on product quality and long-term growth.`,
+            `Headquartered in ${s.hq}, ${s.name} designs, builds, and distributes offerings across the ${s.industry.toLowerCase()} category, competing on innovation and scale.`,
+            `${s.name} is a ${s.sector.toLowerCase()} company best known for its work in ${s.industry.toLowerCase()}, with operations spanning multiple global markets.`
+        ];
+        const rng = rngFor(symbol + ':desc');
+        return {
+            description: pick(rng, descTemplates),
+            sector: s.sector,
+            industry: s.industry,
+            ceo: s.ceo,
+            hq: s.hq,
+            employees: s.employees,
+            website: s.website
+        }
     }
+
+    // Stats
+    function getStatistics(symbol) {
+        const s = getStock(symbol);
+        return {
+            open: s.open, 
+            prevClose: s.prevClose, 
+            dayHigh: s.dayHigh, 
+            dayLow: s.dayLow,
+            week52High: 
+            s.week52High, 
+            week52Low: s.week52Low, 
+            marketCap: s.marketCap,
+            volume: s.volume, 
+            avgVolume: s.avgVolume, 
+            peRatio: s.peRatio, 
+            eps: s.eps,
+            dividendYield: s.dividendYield, 
+            beta: s.beta
+        };
+    }
+
+    // News
+    function getNews(symbol) {
+        const s = getStock(symbol);
+        const rng = rngFor(symbol + ':news');
+        const sources = ['MarkerPulse', 'Ledger Daily', 'StreetWire', 'Capital Desk', 'Quarterly Brief'];
+        const templates = [
+            `${s.name} shares move after analysts revisit price targets`,
+            `What ${s.symbol}'s latest guidance means for the ${s.sector.toLowerCase()} sector`,
+            `${s.name} expands product lineup ahead of next earnings call`,
+            `Institutional investors adjust ${s.symbol} positions this quarter`,
+            `${s.name} outlines cost efficiency plan for the year ahead`,
+        ];
+        const count = 4 + Math.floor(rng() * 2);
+        const items = [];
+        for (let i = 0; i < count; i++) {
+            const hoursAgo = Math.floor(rng() * 46) + 1;
+            items.push({
+                id: symbol + '-news-' + i,
+                headline: templates[i % templates.length],
+                source: pick(rng, sources);
+                publishedAgo: hoursAgo < 24 ? hoursAgo + 'h ago' : Math.floor(hoursAgo / 24) + 'd ago',
+                colorA: s.logoColors[0],
+                colorB: s.logoColors[1]
+            });
+        }
+        return items;
+    } 
 })
