@@ -104,5 +104,124 @@
         };
     }
 
-    
+    function tickStock(symbol) {
+        const sym = symbol.toUpperCase();
+        const s = liveState[sym];
+        if (!s) return getStock(sym);
+        const drift = (s.rng() - 0.5) * s.price * 0.0016;
+        s.price = round2(Math.max(0.5, s.price + drift));
+        return getStock(sym);
+    }
+
+    function marketStatus() {
+        const now = new Date();
+        const day = now.getUTCDate();
+        const estHour = (now.getUTCHours() - 4 + 24) % 24;
+        const minutes = estHour * 60 + now.getUTCMinutes();
+        const isWeekday = day >= 1 && day <= 5;
+        if (isWeekday && minutes >= 570 && minutes < 960) return 'open';
+        if (isWeekday && ((minutes >= 240 && minutes < 570) || (minutes >= 960 && minutes < 1200))) return 'extended';
+        return 'closed';
+    }
+
+    const TIMEFRAMES = {
+        '1D': { points: 78, unit: 'minute', span: 1 },
+        '5D': { points: 65, unit: 'hour', span: 5 },
+        '1M': { points: 22, unit: 'day', span: 30 },
+        '3M': { points: 64, unit: 'day', span: 90 },
+        '6M': { points: 126, unit: 'day', span: 182 },
+        'YTD': { points: 140, unit: 'day', span: 200 },
+        '1Y': { points: 252, unit: 'day', span: 365 },
+        '5Y': { points: 60, unit: 'month', span: 1825 },
+        'MAX': { points: 96, unit: 'month', span: 3650 }
+    };
+
+    function regimeSequence(rng, n) {
+        const types = ['uptrend', 'downtrend', 'pullback', 'consolidation', 'spike'];
+        const segs = [];
+        let remaining = n;
+        while (remaining > 0) {
+            const type = pick(rng, types);
+            const len = type === 'spike'
+                ? Math.min(remaining, 1 + Math.floor(rng() * 3))
+                : Math.min(remaining, Math.floor(n * (0.12 + rng() * 0.28)) + 3);
+            segs.push({ type, len });
+            remaining -= len;    
+        }
+        return segs;
+    }
+
+    function buildWalk(rng, n, volFactor) {
+        const segs = regimeSequence(rng, n);
+        const out = [1];
+        let level = 1;
+        segs.forEach(seg => {
+            for (let i = 0; i < seg.len && out.length < n; i++) {
+                let drift = 0; noise = (rng() - 0.5) * volFactor
+                if (seg.type === 'uptrend') drift = volFactor * 0.32;
+                else if (seg.type === 'downtrend') drift = -volFactor * 0.32;
+                else if (seg.type === 'pullback') drift = -volFactor * 0.18;
+                else if (seg.type === 'consolidation') { drift = 0; noise *= 0.35; }
+                else if (seg.type === 'spike') drift = (rng() > 0.5 ? 1 : -1) * volFactor * (2.4 + rng() * 2); 
+                level = Math.max(0.05, level + drift + noise);
+                out.push(level);
+            }
+        });
+        while (out.length < n) out.push(out[out.length - 1]);
+        return out.slice(0, n);
+    }
+
+    function labelFor(unit, idx, n, now) {
+        const d = new Date(now);
+        if (unit === 'minute') {
+            d.setHours(9, 30 + Math.round((idx / (n-1)) * 390), 0, 0);
+            return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+
+        if (unit === 'hour') {
+            d.setDate(d.getDate() - Math.floor((n - 1 - idx) / 13));
+            return d.toLocaleDateString('en-US', { weekday: 'short' });
+        }
+
+        if (unit === 'day') {
+            d.setDate(d.getDate() - (n - 1 - idx));
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        d.setMonth(d.getMonth() - (n - 1 - idx));
+        return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+    }
+
+    function getChart(symbol, timeframe) {
+        const sym = symbol.toUpperCase();
+        const tf = TIMEFRAMES[timeframe] || TIMEFRAMES['1M'];
+        const stock = getStock(sym);
+        const rng = rngFor(sym + ':chart' + timeframe);
+        const volMap = { minute: 0.0016, hour: 0.006, day: 0.014, month: 0.05};
+        const walk = buildWalk(rng, tf.points, volMap[tf.unit]);
+
+        // Make it so series ends at current level price
+        // Keep generated shape
+        const rawStart = walk[0], rawEnd = walk[walk.length - 1];
+        const priceStartGuess = stock.price / (1 + (rng() - 0.45) * (tf.unit === 'minute' ? 0.01 : tf.unit === 'month' ? 0.9 : 0.22));
+        const prices = walk.map((v, i) => {
+            const t = i / (walk.length - 1);
+            const shapeVal = rawStart === rawEnd ? v : (v - rawStart) / (rawEnd - rawStart);
+            const base = priceStartGuess + (stock.price - priceStartGuess) * t;
+            const wiggle = (shapeVal - t) * stock.price * 0.18;
+            return round2(Math.max(0.5, base + wiggle));
+        });
+        prices[prices.length - 1] = stock.price;
+
+        const now = new Date();
+        const labels = prices.map((_, i) => labelFor(tf.unit, i, prices.length, now));
+        const volumes = prices.map(() => Math.floor(rng() * stock.avgVolume * 1.4 + stock.avgVolume * 0.3));
+
+        return { symbol: sym, timeframe, labels, prices, volumes, isIntraday: tf.unit === 'minute'};
+    }
+
+    // conpany overview
+    function getCompanyOverview(symbol) {
+        const s = getStock(symbol);
+    }
 })
