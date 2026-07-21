@@ -280,7 +280,7 @@
             items.push({
                 id: symbol + '-news-' + i,
                 headline: templates[i % templates.length],
-                source: pick(rng, sources);
+                source: pick(rng, sources),
                 publishedAgo: hoursAgo < 24 ? hoursAgo + 'h ago' : Math.floor(hoursAgo / 24) + 'd ago',
                 colorA: s.logoColors[0],
                 colorB: s.logoColors[1]
