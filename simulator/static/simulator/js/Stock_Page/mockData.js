@@ -272,6 +272,7 @@
             `${s.name} expands product lineup ahead of next earnings call`,
             `Institutional investors adjust ${s.symbol} positions this quarter`,
             `${s.name} outlines cost efficiency plan for the year ahead`,
+            `A look at ${s.symbol}'s valuation versus sector peers`
         ];
         const count = 4 + Math.floor(rng() * 2);
         const items = [];
