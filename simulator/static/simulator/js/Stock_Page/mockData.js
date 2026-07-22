@@ -289,4 +289,134 @@
         }
         return items;
     } 
-})
+
+    // Finances
+    function getFinancials(symbol) {
+        const s = getStock(symbol);
+        const rng = rngFor(symbol + ':fin');
+        const quarters = ['Q3 \'24', 'Q4 \'24', 'Q1 \'25', 'Q2 \'25'];
+        let revenue = s.marketCap / 1e6 * (0.05 + rng() * 0.03);
+        const rows = quarters.map(q => {
+            revenue *= (1 + (rng() - 0.35) * 0.09);
+            const margin = 0.12 + rng() * 0.22;
+            const netIncome = revenue * margin;
+            return  {
+                quarter: q,
+                revenue: Math.round(revenue),
+                netIncome: Math.round(netIncome),
+                eps: round2(netIncome / (revenue / s.eps || 1) * 0.01 + s.eps * (0.8 + rng() * 0.4)),
+                grossMargin: round2(margin * 100 + 20)
+            };
+        });
+        return rows;
+    }
+
+    // History
+    function getOrders(symbol) {
+        const s = getStock(symbol);
+        const rng = rngFor(symbol + ":orders");
+        if (rng() < 0.22) return [];
+        const count = 2 + Math.floor(rng() * 5);
+        const orders = [];
+        let cursor = new Date();
+        for (let i = 0; i < count; i++) {
+            cursor = new Date(cursor.getTime() - (rng() * 9 + 1) * 86400000);
+            const side = rng() > 0.35 ? 'buy' : 'sell';
+            const shares = Math.floor(rng() * 40) + 1;
+            const price = round2(s.price * (0.85 + rng() * 0.3));
+            orders.push({
+                id: symbol + '-ord' + i, side, shares, price,
+                total: round2(shares * price),
+                date: cursor.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                time: cursor.toLocaleTimeString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            });
+        }
+        return orders;
+    }
+
+    // Position 
+    function getPosition(symbol) {
+        const s = getStock(symbol);
+        const rng = rngFor(symbol + ':position');
+        if (rng() < 0.3) return null;
+        const shares = round2(rng() * 60 + 1);
+        const avgCost = round2(s.price * (0.78 + rng() * 0.35));
+        const totalInvested = round2(shares * avgCost);
+        const currentValue = round2(shares * s.price);
+        const unrealizedPL = round2(currentValue - totalInvested);
+        return {
+            shares, avgCost, totalInvested, currentValue, unrealizedPL,
+            unrealizedPLPercent: round2((unrealizedPL / totalInvested) * 100),
+            todayReturn: round2(rng() * 22 + 2)
+        };
+    }
+
+    // Account
+    function getAccount() {
+        return { buyingPower: 8420.55, cashRemaining: 8420.55}; // Cause why not
+    }
+
+    // Related Stocks
+    function getRelatedStocks(symbol) {
+        const sym = symbol.toUpperCase();
+        const pool = SYMBOL_LIST.filter(s => s !== sym);
+        const rng = rngFor(sym + ':related');
+        const picked = [];
+        const poolCopy = [...pool];
+        for (let i = 0; i < 4 && poolCopy.length; i++) {
+            const idx = Math.floor(rng() * poolCopy.length);
+            picked.push(poolCopy.splice(idx, 1)[0]);
+        }
+        return picked.map(s => {
+            const q = getStock(s);
+            return { 
+                symbol: q.symbol, 
+                name: q.name, 
+                price: q.price, 
+                changePercent: q.changePercent, 
+                colors: q.logoColors 
+            };
+        });
+    }
+
+    // Search
+    function searchSymbols(query) {
+        const q = query.trim().toUpperCase();
+        if (!q) return [];
+        return SYMBOL_LIST
+            .filter(s => s.includes(q) || COMPANIES[s].name.toUpperCase().includes(q))
+            .slice(0, 6)
+            .map(s => ({ symbol: s, name: COMPANIES[s].name, colors: COMPANIES[s].colors, price: getStock(s).price, changePercent: getStock(s).changePercent }));
+    }
+
+    function popularSymbols(limit) {
+        return SYMBOL_LIST.slice(0, limit || 5).map(s => {
+            const q = getStock(s);
+            return { 
+                symbol: s, 
+                name: COMPANIES[s].name, 
+                colors: COMPANIES[s].colors, 
+                price: q.price, 
+                changePercent: q.changePercent 
+            };
+        });
+    }
+
+    window.MockData = {
+        getStock,
+        tickStock,
+        getChart,
+        getCompanyOverview,
+        getStatistics,
+        getNews,
+        getFinancials,
+        getOrders,
+        getPosition,
+        getAccount,
+        getRelatedStocks,
+        searchSymbols,
+        popularSymbols,
+        SYMBOL_LIST,
+        marketStatus
+    };
+})();
