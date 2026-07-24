@@ -16,17 +16,17 @@
                 }
             });
         }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-        els.forEach(el => io.observe(el))
+        els.forEach(el => io.observe(el));
     }
 
     function countUp(el, from, to, { duration = 700, prefix='', decimals = 2} = {}) {
-        if (reducedMotion) { el.textContext = prefix + to.toFixed(decimals); return; }
+        if (reducedMotion) { el.textContent = prefix + to.toFixed(decimals); return; }
         const start = performance.now();
         function frame(now) {
             const t = Math.min(1, (now - start) / duration);
             const eased = 1 - Math.pow(1-t, 3);
             const val = from + (to - from) * eased;
-            el.textContext = prefix + val.toFixed(decimals);
+            el.textContent = prefix + val.toFixed(decimals);
             if (t < 1) requestAnimationFrame(frame);
         } 
         requestAnimationFrame(frame);

@@ -5,7 +5,7 @@
 
     function symbolFromLocation() {
         const m = window.location.pathname.match(/\/stock\/([A-Za-z.]{1,6})/);
-        if (m) return m[1].toLocaleUpperCase();
+        if (m) return m[1].toUpperCase();
         const q = new URLSearchParams(window.location.search).get('symbol');
         if (q) return q.toUpperCase();
         return 'AAPL';
@@ -14,17 +14,17 @@
     function showAllSkeletons() {
         ['header', 'chart', 'stats', 'overview', 'trade', 'position', 'related', 'news', 'financials', 'orders'].forEach(k => {
             const sk = document.getElementById(k + '-skeleton');
-            const content = document.getElementById(k + '-skeleton');
+            const content = document.getElementById(k + '-content');
             if (sk) { sk.style.display = ''; sk.classList.remove('sk-swap-out'); }
             if (content) { content.style.display = 'none'; content.classList.remove('sk-swap-in'); }
         });
     }
 
     function renderChartRangeSummary(series) {
-        const first = series.price[0], last = series.prices[series.prices.length - 1];
+        const first = series.prices[0], last = series.prices[series.prices.length - 1];
         const change = last - first;
         const pct = (change / first ) * 100;
-        const high = Math.max(...series.prices), low = Math.min(...series.prices.length - 1);
+        const high = Math.max(...series.prices), low = Math.min(...series.prices);
         const cls = change >= 0 ? 'text-gain' : 'text-loss';
         document.getElementById('chart-range-summary').innerHTML = `
             <div class="item">Period Change<b class="tabular ${cls}">${TSFormat.sign(change)}${change.toFixed(2)} (${TSFormat.pct(pct)})</b></div>
@@ -33,7 +33,7 @@
         `;
     }
 
-    function revealChartSection(series) {
+    function revealChartSection() {
         const sk = document.getElementById('chart-skeleton');
         const content = document.getElementById('chart-content');
         if (content.style.display === 'none') {
@@ -48,18 +48,18 @@
         revealChartSection();
         const series = window.MockData.getChart(symbol, timeframe);
         if (!state.chart) {
-            state.chart = new stockChart(document.getElementById('chart-canvas'), document.getElementById('chart-tooltip'));
+            state.chart = new StockChart(document.getElementById('chart-canvas'), document.getElementById('chart-tooltip'));
         } else {
-            state.chart.__resize();
+            state.chart._resize();
         }
         state.chart.setData(series.labels, series.prices, { animate });
         renderChartRangeSummary(series);
     }
 
     function wireTimeframes(symbol) {
-        document.querySelectorAll('.ts-timeframes button'). forEach(btn => {
+        document.querySelectorAll('.ts-timeframes button').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.ts-fin-tabs button').forEach(b => b.classList.remove('is-active'));
+                document.querySelectorAll('.ts-timeframes button').forEach(b => b.classList.remove('is-active'));
                 btn.classList.add('is-active');
                 state.timeframe = btn.dataset.tf;
                 loadChart(state.symbol, state.timeframe, true);
@@ -70,7 +70,7 @@
     function wireFinancialsTabs() {
         document.querySelectorAll('.ts-fin-tabs button').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.ts-fin.tabs button').forEach(b => b.classList.remove('is-active'));
+                document.querySelectorAll('.ts-fin-tabs button').forEach(b => b.classList.remove('is-active'));
                 btn.classList.add('is-active');
                 window.TSUI.renderFinancialBars(btn.dataset.metric);
             });
@@ -88,9 +88,9 @@
     function startLiveTicker() {
         clearInterval(state.liveTimer);
         state.liveTimer = setInterval(() => {
-            const perv = window.MockData.getStock(state.symbol).price;
+            const prev = window.MockData.getStock(state.symbol).price;
             const stock = window.MockData.tickStock(state.symbol);
-            const up = stock.price >= perv;
+            const up = stock.price >= prev;
             TSUI.renderHeader(stock);
             TSUI.flashPrice(document.getElementById('header-price'), up);
             TSUI.renderTradePanel(stock, window.MockData.getAccount());
