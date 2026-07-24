@@ -19,7 +19,7 @@
         const seedFn = hashSeed(seedStr);
         let a = (seedFn() * 4294967296) >>> 0;
         return function () {
-            a != 0; a = (a + 0x6D2B79F5) | 0;
+            a |= 0; a = (a + 0x6D2B79F5) | 0;
             let t = Math.imul(a ^ (a >>> 15), 1 | a);
             t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
             return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -53,7 +53,7 @@
         const sector = pick(rng, sectors);
         const colorPairs = [['#2E6BFF', '#4F46E5'], ['#0EA97A', '#2DD4BF'], ['#E23A54', '#FF6B6B'], ['#7C3AED', '#22D3EE'], ['#F0A93A', '#E23A54']];
         return {
-            symbol: sym, name: sym + 'Holdings, Inc.', exchange: rng() > 0.5 ? 'NASDAQ' : 'NYSE',
+            symbol: sym, name: sym + ' Holdings, Inc.', exchange: rng() > 0.5 ? 'NASDAQ' : 'NYSE',
             sector, industry: sector + 'Services', ceo: 'A. Rivera', hq: 'Wilmington, DE',
             employees: (Math.floor(rng() * 90) + 2) + ',000', website: sym.toLowerCase() + '.com',
             base: round2(20 + rng() * 380), colors: pick(rng, colorPairs)
@@ -115,7 +115,7 @@
 
     function marketStatus() {
         const now = new Date();
-        const day = now.getUTCDate();
+        const day = now.getUTCDay();
         const estHour = (now.getUTCHours() - 4 + 24) % 24;
         const minutes = estHour * 60 + now.getUTCMinutes();
         const isWeekday = day >= 1 && day <= 5;
@@ -157,7 +157,7 @@
         let level = 1;
         segs.forEach(seg => {
             for (let i = 0; i < seg.len && out.length < n; i++) {
-                let drift = 0; noise = (rng() - 0.5) * volFactor
+                let drift = 0, noise = (rng() - 0.5) * volFactor
                 if (seg.type === 'uptrend') drift = volFactor * 0.32;
                 else if (seg.type === 'downtrend') drift = -volFactor * 0.32;
                 else if (seg.type === 'pullback') drift = -volFactor * 0.18;
@@ -196,7 +196,7 @@
         const sym = symbol.toUpperCase();
         const tf = TIMEFRAMES[timeframe] || TIMEFRAMES['1M'];
         const stock = getStock(sym);
-        const rng = rngFor(sym + ':chart' + timeframe);
+        const rng = rngFor(sym + ':chart:' + timeframe);
         const volMap = { minute: 0.0016, hour: 0.006, day: 0.014, month: 0.05};
         const walk = buildWalk(rng, tf.points, volMap[tf.unit]);
 
