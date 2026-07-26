@@ -3,3 +3,5 @@ Proj_env
 db.sqlite3
 .env
 .vscode
+# Ignore frontend testing folder
+Frontend
