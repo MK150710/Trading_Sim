@@ -1,0 +1,128 @@
+:root {
+    --font-display: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'IBX Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+    --fs-2xs: 0.6875rem; 
+    --fs-xs: 0.75rem;    
+    --fs-sm: 0.8125rem;  
+    --fs-base: 0.9375rem;
+    --fs-md: 1.0625rem;  
+    --fs-lg: 1.375rem;   
+    --fs-xl: 1.75rem;    
+    --fs-2xl: 2.375rem;  
+    --fs-3xl: 3rem;      
+
+     /* Spacing */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 20px;
+    --sp-6: 24px;
+    --sp-8: 32px;
+    --sp-10: 40px;
+    --sp-12: 48px;
+    --sp-16: 64px;
+
+    /* Radius */
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-pill: 999px;
+
+    /* Gradients */
+    --grad-primary: linear-gradient(135deg, #0B1F3D 0%, #2E6BFF 100%);
+    --grad-primary-soft: linear-gradient(135deg, rgba(46,107,255,0.16) 0%, rgba(79,70,229,0.10) 100%);
+    --grad-accent: linear-gradient(135deg, #4F46E5 0%, #22D3EE 100%);
+    --grad-gain: linear-gradient(135deg, #0EA97A 0%, #2DD4BF 100%);
+    --grad-gain-soft: linear-gradient(135deg, rgba(16,185,129,0.16) 0%, rgba(45,212,191,0.10) 100%);
+    --grad-loss: linear-gradient(135deg, #E23A54 0%, #FF6B6B 100%);
+    --grad-loss-soft: linear-gradient(135deg, rgba(255,59,92,0.16) 0%, rgba(255,107,107,0.09) 100%);
+
+    /*Colours, default = light*/
+    --color-bg: #F5F7FB;
+    --color-bg-elevated: #FFFFFF;
+    --color-bg-subtle: #EEF1F8;
+    --color-surface: #FFFFFF;
+    --color-surface-hover: #F7F9FD;
+    --color-border: rgba(20, 28, 46, 0.09);
+    --color-border-strong: rgba(20, 28, 46, 0.16);
+
+    --color-text-primary: #0E1526;
+    --color-text-secondary: #4B5468;
+    --color-text-tertiary: #8891A5;
+    --color-text-inverse: #F5F7FB;
+
+    --color-primary: #2E6BFF;
+    --color-primary-hover: #1E56E0;
+    --color-accent: #4F46E5;
+
+    --color-gain: #0EA97A;
+    --color-gain-bg: rgba(14, 169, 122, 0.10);
+    --color-loss: #E23A54;
+    --color-loss-bg: rgba(226, 58, 84, 0.10);
+    --color-neutral: #8891A5;
+
+    --color-warning: #D97706;
+    --color-focus-ring: #2E6BFF;
+
+    --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+    --shadow-sm: 0 2px 6px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16,24,40,0.04);
+    --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08), 0 2px 6px rgba(16,24,40,0.04);
+    --shadow-lg: 0 16px 40px rgba(16, 24, 40, 0.12), 0 4px 10px rgba(16,24,40,0.05);
+    --shadow-glow-primary: 0 0 0 1px rgba(46,107,255,0.18), 0 8px 24px rgba(46,107,255,0.18);
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --dur-fast: 140ms;
+    --dur-base: 220ms;
+    --dur-slow: 420ms;
+
+    --nav-height: 64px;
+    --content-max: 1360px;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --color-bg: #070B14;
+    --color-bg-elevated: #0D1526;
+    --color-bg-subtle: #0A0F1C;
+    --color-surface: #0E1728;
+    --color-surface-hover: #131F36;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-border-strong: rgba(255, 255, 255, 0.14);
+
+    --color-text-primary: #F2F5FA;
+    --color-text-secondary: #A7B0C4;
+    --color-text-tertiary: #6C7690;
+    --color-text-inverse: #0E1526;
+
+    --color-primary: #4C82FF;
+    --color-primary-hover: #6E98FF;
+    --color-accent: #7C7AFF;
+
+    --color-gain: #22C58B;
+    --color-gain-bg: rgba(34, 197, 139, 0.14);
+    --color-loss: #FF5470;
+    --color-loss-bg: rgba(255, 84, 112, 0.14);
+    --color-neutral: #6C7690;
+
+    --color-warning: #F0A93A;
+    --color-focus-ring: #6E98FF;
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.55);
+    --shadow-glow-primary: 0 0 0 1px rgba(76,130,255,0.28), 0 8px 28px rgba(76,130,255,0.28);
+
+    --grad-primary: linear-gradient(135deg, #101B33 0%, #3D77FF 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --color-bg: #070B14;
+    }
+}
