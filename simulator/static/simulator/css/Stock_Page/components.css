@@ -446,3 +446,187 @@
     color: var(--color-text-primary);
     margin-top: 2px;
 }
+
+/* staat grif */
+.ts-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-5);
+}
+.ts-stat-item .label {
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.ts-stat-item .value {
+    font-family: var(--font-mono);
+    font-size: var(--fs-base);
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* Conpany overivew*/
+.ts-overview-desc {
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    font-size: var(--fs-sm);
+    margin-bottom: var(--sp-5);
+}
+.ts-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+}
+.ts-overview-item .label {
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+}
+.ts-overview-item .value {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    margin-top: 3px;
+}
+
+/* trading panel */
+.ts-trade-panel {
+    padding: var(--sp-5);
+}
+.ts-trade-panel__price {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--sp-5);
+}
+.ts-trade-panel__price .amt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+}
+
+.ts-segmented {
+    display: flex;
+    background: var(--color-bg-subtle);
+    border-radius: var(--r-sm);
+    padding: 3px;
+    margin-bottom: var(--sp-4);
+}
+.ts-segmented button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 9px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    color: var(--color-text-tertiary);
+    transition: all var(--dur-fast) var(--ease-out);
+}
+.ts-segmented button.is-active.buy {
+    background: var(--grad-gain);
+    color: #fff;
+}
+.ts-segmented button.is-active.sell {
+    background: var(--grad-loss);
+    color: #fff;
+}
+
+.ts-field {
+    margin-bottom: var(--sp-4);
+}
+.ts-field label {
+    display: block;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+}
+.ts-field select, .ts-field .ts-qty {
+    width: 100%;
+    border: 1.5px solid var(--color-border-strong);
+    background: var(--color-bg-subtle);
+    border-radius: var(--r-sm);
+    padding: 10px 12px;
+    font-size: var(--fs-sm);
+    color: var(--color-text-primary);
+    transition: border-color var(--dur-fast) var(--ease-out);
+}
+.ts-field select:focus, .ts-field .ts-qty:focus-within {
+    outline: none;
+    border-color: var(--color-primary);
+}
+.ts-qty {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: 6px;
+}
+.ts-qty input {
+    border: none;
+    background: transparent;
+    outline: none;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    width: 100%;
+    color: var(--color-text-primary);
+}
+.ts-qty button {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 6px;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.ts-qty button:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-primary);
+}
+
+.ts-trade-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: var(--sp-4) 0;
+    border-top: 1px dashed var(--color-border);
+    margin-bottom: var(--sp-4);
+}
+.ts-trade-summary .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--fs-xs);
+    color: var(--color-text-secondary);
+}
+.ts-trade-summary .row.total {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+.ts-trade-summary .row .val {
+    font-family: var(--font-mono);
+}
+
+.ts-field-error {
+    font-size: var(--fs-2xs);
+    color: var(--color-loss);
+    margin-top: 6px;
+    display: none;
+}
+.ts-field-error.is-visible {
+    display: block;
+}
+
+.ts-trade-actions {
+    display: flex;
+    gap: var(--sp-3);
+}
+.ts-trade-actions .btn {
+    flex: 1;
+}
