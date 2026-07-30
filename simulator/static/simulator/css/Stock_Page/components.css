@@ -630,3 +630,296 @@
 .ts-trade-actions .btn {
     flex: 1;
 }
+
+/* Position card*/
+.ts-position-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-4);
+}
+.ts-position-grid .label {
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+}
+.ts-position-grid .value {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--fs-sm);
+    margin-top: 3px;
+}
+.ts-alloc-bar {
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: var(--color-bg-subtle);
+    overflow: hidden;
+    margin-top: var(--sp-2);
+}
+.ts-alloc-bar__fill {
+    height: 100%;
+    background: var(--grad-accent);
+    border-radius: var(--r-pill);
+    transition: width var(--dur-slow) var(--ease-out);
+}
+
+/* Watchlist star */ 
+.ts-watch-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+.ts-watch-btn svg {
+    width: 19px;
+    height: 19px;
+    stroke: var(--color-text-tertiary);
+    fill: none;
+    transition: fill var(--dur-base) var(--ease-out), stroke var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.ts-watch-btn.is-active svg {
+    fill: var(--color-warning);
+    stroke: var(--color-warning);
+}
+.ts-watch-btn.pop svg {
+    animation: starPop 480ms var(--ease-out);
+}
+
+/* related stocks*/
+.ts-related-list {
+    display: flex;
+    flex-direction: column;
+}
+.ts-related-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: padding-left var(--dur-fast) var(--ease-out);
+}
+.ts-related-item:last-child {
+    border-bottom: none;
+}
+.ts-related-item:hover {
+    padding-left: var(--sp-2);
+}
+.ts-related-item .logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: var(--fs-2xs);
+    flex-shrink: 0;
+}
+.ts-related-item .sym {
+    font-weight: 700;
+    font-size: var(--fs-sm);
+}
+.ts-related-item .nm {
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+}
+.ts-related-item .px {
+    margin-left: auto;
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+.ts-related-item .chg {
+    font-size: var(--fs-2xs);
+    font-family: var(--font-mono);
+}
+
+/* news*/
+.ts-news-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-4);
+}
+.ts-news-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--color-bg-subtle);
+}
+.ts-news-card__thumb {
+    height: 120px;
+    overflow: hidden;
+    position: relative;
+    }
+.ts-news-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease-out);
+}
+.ts-news-card:hover .ts-news-card__thumb img {
+    transform: scale(1.06);
+}
+.ts-news-card__body {
+    padding: var(--sp-3) var(--sp-4) var(--sp-4);
+}
+.ts-news-card__headline {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: var(--sp-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.ts-news-card__meta {
+    display: flex;
+    gap: var(--sp-2);
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+}
+
+/* financials */
+.ts-fin-tabs {
+    display: flex;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-4);
+}
+.ts-fin-tabs button {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding: 6px 14px;
+    border-radius: var(--r-pill);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+.ts-fin-tabs button.is-active {
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+    border-color: transparent;
+}
+.ts-fin-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--sp-4);
+    height: 160px;
+    padding-top: var(--sp-4);
+}
+.ts-fin-bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    justify-content: flex-end;
+}
+.ts-fin-bar {
+    width: 100%;
+    max-width: 34px;
+    border-radius: 6px 6px 0 0;
+    background: var(--grad-accent);
+    transition: height var(--dur-slow) var(--ease-out);
+    position: relative;
+}
+.ts-fin-bar-col .lbl {
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+}
+.ts-fin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--sp-5);
+    font-size: var(--fs-sm);
+}
+.ts-fin-table th, .ts-fin-table td {
+    text-align: right;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+}
+.ts-fin-table th:first-child, .ts-fin-table td:first-child {
+    text-align: left;
+    font-family: var(--font-ui);
+    color: var(--color-text-secondary);
+}
+.ts-fin-table th {
+    color: var(--color-text-tertiary);
+    font-weight: 600;
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+}
+
+/* timeline of order histry8*/
+.ts-timeline {
+    display: flex;
+    flex-direction: column;
+}
+.ts-timeline-item {
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    gap: var(--sp-3);
+    padding: var(--sp-3) 0;
+    position: relative;
+}
+.ts-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 17px;
+    top: 40px;
+    bottom: -12px;
+    width: 1px;
+    background: var(--color-border);
+}
+.ts-timeline-item:last-child::before {
+    display: none;
+}
+.ts-timeline-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    z-index: 1;
+}
+.ts-timeline-icon.buy {
+    background: var(--color-gain-bg);
+    color: var(--color-gain);
+}
+.ts-timeline-icon.sell {
+    background: var(--color-loss-bg);
+    color: var(--color-loss);
+}
+.ts-timeline-body .action {
+    font-weight: 700;
+    font-size: var(--fs-sm);
+}
+.ts-timeline-body .meta {
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+    margin-top: 2px;
+}
+.ts-timeline-total {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--fs-sm);
+}
+.ts-timeline-total .date {
+    display: block;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: var(--fs-2xs);
+    color: var(--color-text-tertiary);
+    margin-top: 2px;
+}
