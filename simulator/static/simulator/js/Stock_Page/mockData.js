@@ -54,7 +54,7 @@
         const colorPairs = [['#2E6BFF', '#4F46E5'], ['#0EA97A', '#2DD4BF'], ['#E23A54', '#FF6B6B'], ['#7C3AED', '#22D3EE'], ['#F0A93A', '#E23A54']];
         return {
             symbol: sym, name: sym + ' Holdings, Inc.', exchange: rng() > 0.5 ? 'NASDAQ' : 'NYSE',
-            sector, industry: sector + 'Services', ceo: 'A. Rivera', hq: 'Wilmington, DE',
+            sector, industry: sector + ' Services', ceo: 'A. Rivera', hq: 'Wilmington, DE',
             employees: (Math.floor(rng() * 90) + 2) + ',000', website: sym.toLowerCase() + '.com',
             base: round2(20 + rng() * 380), colors: pick(rng, colorPairs)
         };
@@ -177,17 +177,14 @@
             d.setHours(9, 30 + Math.round((idx / (n-1)) * 390), 0, 0);
             return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         }
-
         if (unit === 'hour') {
             d.setDate(d.getDate() - Math.floor((n - 1 - idx) / 13));
             return d.toLocaleDateString('en-US', { weekday: 'short' });
         }
-
         if (unit === 'day') {
             d.setDate(d.getDate() - (n - 1 - idx));
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
-
         d.setMonth(d.getMonth() - (n - 1 - idx));
         return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
     }
@@ -325,7 +322,7 @@
             const shares = Math.floor(rng() * 40) + 1;
             const price = round2(s.price * (0.85 + rng() * 0.3));
             orders.push({
-                id: symbol + '-ord' + i, side, shares, price,
+                id: symbol + '-ord-' + i, side, shares, price,
                 total: round2(shares * price),
                 date: cursor.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 time: cursor.toLocaleTimeString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -347,7 +344,8 @@
         return {
             shares, avgCost, totalInvested, currentValue, unrealizedPL,
             unrealizedPLPercent: round2((unrealizedPL / totalInvested) * 100),
-            todayReturn: round2(rng() * 22 + 2)
+            todayReturn: round2(shares * s.change),
+            allocationPercent: round2(rng() * 22 + 2)
         };
     }
 

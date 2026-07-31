@@ -290,7 +290,7 @@
         setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 200ms'; setTimeout(() => el.remove(), 220); }, 2600);
     }
 
-    windows.TSUI = {
+    window.TSUI = {
         renderHeader, 
         flashPrice, 
         renderStats, 

@@ -63,8 +63,8 @@
             html += `<div class="ts-search__group-label">Popular</div>` +
                 window.MockData.popularSymbols(5).map(resultRow).join('');
             panel.innerHTML = html;
-            currentItems = [...RECENT_KEY(recent.map(s => ({ symbol: s })).filter(x => x)), ...window.MockData.popularSymbols(5)];
-            panel.querySelectorAll('.ts-search-result').forEach(el => {
+            currentItems = [...(recent.map(s => ({ symbol: s })).filter(x => x)), ...window.MockData.popularSymbols(5)];
+            panel.querySelectorAll('.ts-search__result').forEach(el => {
                 el.addEventListener('click', () => select(el.dataset.symbol));
             });
             activeIndex = -1;
@@ -74,7 +74,7 @@
             pushRecent(symbol);
             close();
             input.value = '';
-            onSelect(symbol)
+            onSelect(symbol);
         }
 
         function open() { panel.classList.add('is-open'); input.setAttribute('aria-expanded', 'true'); }
