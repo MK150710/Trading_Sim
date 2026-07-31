@@ -16,5 +16,6 @@ urlpatterns = [
     path("api/market", views.get_market_overview, name="market_overview_api"),
     path("api/movers", views.get_movers, name="market_movers"),
     path("api/trending", views.get_trending, name="trending_markets"),
-    path("api/landing-market", views.landing_page_market, name="Landing_Page_market")
+    path("api/landing-market", views.landing_page_market, name="Landing_Page_market"),
+    path('stock/<str:symbol>/', views.render_stock_page, name='stock_detail'),
 ]

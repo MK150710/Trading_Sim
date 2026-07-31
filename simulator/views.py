@@ -337,3 +337,12 @@ def landing_page_market(request):
         })
 
     return JsonResponse(landing_data, safe=False)
+
+
+
+def render_stock_page(request, symbol):
+    context = {
+        'symbol': symbol.upper()
+    }
+    return render(request, 'simulator/stock_page.html', context)
+    
