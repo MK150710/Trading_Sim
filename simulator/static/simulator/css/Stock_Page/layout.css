@@ -22,7 +22,7 @@ a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 
 /*navbar*/
-ts-navbar {
+.ts-navbar {
     position: sticky;
     top: 0;
     z-index: 100;
