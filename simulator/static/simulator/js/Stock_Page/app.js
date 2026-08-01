@@ -44,9 +44,9 @@
         }
     }
 
-    function loadChart(symbol, timeframe, animate) {
+    async function loadChart(symbol, timeframe, animate) {
         revealChartSection();
-        const series = window.MockData.getChart(symbol, timeframe);
+        const series = await API.getChart(symbol, timeframe);
         if (!state.chart) {
             state.chart = new StockChart(document.getElementById('chart-canvas'), document.getElementById('chart-tooltip'));
         } else {
@@ -58,11 +58,11 @@
 
     function wireTimeframes(symbol) {
         document.querySelectorAll('.ts-timeframes button').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 document.querySelectorAll('.ts-timeframes button').forEach(b => b.classList.remove('is-active'));
                 btn.classList.add('is-active');
                 state.timeframe = btn.dataset.tf;
-                loadChart(state.symbol, state.timeframe, true);
+                await loadChart(state.symbol, state.timeframe, true);
             });
         });
     }
@@ -87,47 +87,47 @@
 
     function startLiveTicker() {
         clearInterval(state.liveTimer);
-        state.liveTimer = setInterval(() => {
-            const prev = window.MockData.getStock(state.symbol).price;
-            const stock = window.MockData.tickStock(state.symbol);
+        state.liveTimer = setInterval(async () => {
+            const prev = (await API.getStock(state.symbol)).price;
+            const stock = await API.tickStock(state.symbol);
             const up = stock.price >= prev;
             TSUI.renderHeader(stock);
             TSUI.flashPrice(document.getElementById('header-price'), up);
-            TSUI.renderTradePanel(stock, window.MockData.getAccount());
+            TSUI.renderTradePanel(stock, await API.getAccount());
             TSUI.flashPrice(document.getElementById('trade-price'), up);
         }, 2600);
     }
 
-    function goToSymbol(symbol) {
+    async function goToSymbol(symbol) {
         symbol = symbol.toUpperCase();
         window.history.pushState({}, '', `/stock/${symbol}`);
-        loadSymbol(symbol, true);
+        await loadSymbol(symbol, true);
     }
-    window.addEventListener('popstate', () => loadSymbol(symbolFromLocation(), false));
+    window.addEventListener('popstate', async () => await loadSymbol(symbolFromLocation(), false));
 
-    function loadSymbol(symbol, showLoading) {
+    async function loadSymbol(symbol, showLoading) {
         state.symbol = symbol;
         if (showLoading) showAllSkeletons();
 
-        const render = () => {
-            const stock = window.MockData.getStock(symbol);
-            const account = window.MockData.getAccount();
+        const render = async () => {
+            const stock = await API.getStock(symbol);
+            const account = await API.getAccount();
 
             TSUI.renderHeader(stock);
-            loadChart(symbol, state.timeframe, false);
-            TSUI.renderStats(window.MockData.getStatistics(symbol));
-            TSUI.renderOverview(window.MockData.getCompanyOverview(symbol));
+            await loadChart(symbol, state.timeframe, false);
+            TSUI.renderStats(await API.getStatistics(symbol));
+            TSUI.renderOverview(await API.getCompanyOverview(symbol));
             TSUI.renderTradePanel(stock, account);
-            TSUI.renderPosition(window.MockData.getPosition(symbol));
-            TSUI.renderRelated(window.MockData.getRelatedStocks(symbol), goToSymbol); 
-            TSUI.renderNews(window.MockData.getNews(symbol));
-            TSUI.renderFinancials(window.MockData.getFinancials(symbol));
-            TSUI.renderOrders(window.MockData.getOrders(symbol));
+            TSUI.renderPosition(await API.getPosition(symbol));
+            TSUI.renderRelated(await API.getRelatedStocks(symbol), goToSymbol); 
+            TSUI.renderNews(await API.getNews(symbol));
+            TSUI.renderFinancials(await API.getFinancials(symbol));
+            TSUI.renderOrders(await API.getOrders(symbol));
             TSUI.initWatchlist(symbol);
 
             TSUI.wireTradePanel(
-                () => window.MockData.getStock(state.symbol),
-                () => window.MockData.getAccount(),
+                () => API.getStock(state.symbol),
+                () => API.getAccount(),
                 ({ side, qty, stock}) => {
                     TSUI.toast(`${side === 'buy' ? 'Bought' : 'Sold'} ${qty} share${qty === 1 ? '' : 's'} of ${stock.symbol} (simulated)`);
                 }
@@ -144,7 +144,7 @@
         }
     }
 
-    function init() {
+    async function init() {
         window.TSTheme.initTheme();
         document.getElementById('theme-toggle').addEventListener('click', () => window.TSTheme.toggleTheme());
         
@@ -162,7 +162,7 @@
         if (!window.location.pathname.startsWith('/stock/')) {
             window.history.replaceState({}, '', `/stock/${initialSymbol}`);
         }
-        loadSymbol(initialSymbol, true);
+        await loadSymbol(initialSymbol, true);
     }
 
     document.addEventListener('DOMContentLoaded', init);
