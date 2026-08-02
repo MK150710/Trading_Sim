@@ -1,7 +1,14 @@
 (function () {
     'use strict';
 
-    const state = { symbol: 'AAPL', timeframe: '1D', chart: null, liveTimer: null};
+    const state = {
+        symbol: 'AAPL',
+        timeframe: '1D',
+        chart: null,
+        liveTimer: null,
+        stock: null,
+        account: null
+    };
 
     function symbolFromLocation() {
         const m = window.location.pathname.match(/\/stock\/([A-Za-z.]{1,6})/);
@@ -85,18 +92,6 @@
         });
     }
 
-    function startLiveTicker() {
-        clearInterval(state.liveTimer);
-        state.liveTimer = setInterval(async () => {
-            const prev = (await API.getStock(state.symbol)).price;
-            const stock = await API.tickStock(state.symbol);
-            const up = stock.price >= prev;
-            TSUI.renderHeader(stock);
-            TSUI.flashPrice(document.getElementById('header-price'), up);
-            TSUI.renderTradePanel(stock, await API.getAccount());
-            TSUI.flashPrice(document.getElementById('trade-price'), up);
-        }, 2600);
-    }
 
     async function goToSymbol(symbol) {
         symbol = symbol.toUpperCase();
@@ -113,6 +108,9 @@
             const stock = await API.getStock(symbol);
             const account = await API.getAccount();
 
+            state.stock = stock;
+            state.account = account;
+
             TSUI.renderHeader(stock);
             await loadChart(symbol, state.timeframe, false);
             TSUI.renderStats(await API.getStatistics(symbol));
@@ -126,15 +124,14 @@
             TSUI.initWatchlist(symbol);
 
             TSUI.wireTradePanel(
-                () => API.getStock(state.symbol),
-                () => API.getAccount(),
+                () => state.stock,
+                () => state.account,
                 ({ side, qty, stock}) => {
                     TSUI.toast(`${side === 'buy' ? 'Bought' : 'Sold'} ${qty} share${qty === 1 ? '' : 's'} of ${stock.symbol} (simulated)`);
                 }
             );
 
             window.TSAnim.observeReveal('.reveal');
-            startLiveTicker();
         };
 
         if (showLoading) {
