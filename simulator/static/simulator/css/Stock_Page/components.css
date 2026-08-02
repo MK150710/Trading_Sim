@@ -487,6 +487,22 @@
     font-weight: 600;
     margin-top: 3px;
 }
+.ts-website-link {
+    color: #24c381;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+}
+
+.ts-website-link:hover {
+    opacity: 0.8;
+}
+
+.ts-website-link:visited {
+    color: #f2b10a;
+}
 
 /* trading panel */
 .ts-trade-panel {
