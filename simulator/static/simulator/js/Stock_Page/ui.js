@@ -21,7 +21,7 @@
     // Header 
     function renderHeader(stock) {
         const up = stock.change >= 0;
-        $('#stock-logo').style.background = logoGrad(stock.logoColors);
+        $('#stock-logo').style.background = logoGrad(['#2563EB', '#4F46E5']);
         $('#stock-logo').textContent = initials(stock.symbol);
         $('#stock-name').textContent = stock.name;
         $('#stock-symbol-exchange').textContent = `${stock.symbol} · ${stock.exchange}`;
@@ -44,12 +44,6 @@
         $('#header-updated').textContent = 'As of ' + stock.lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
 
         crossfadeIn($('#header-skeleton'), $('#header-content'));
-    }
-
-    function flashPrice(el, up) {
-        el.classList.remove('flash-up', 'flash-down');
-        void el.offsetWidth;
-        el.classList.add(up ? 'flash-up' : 'flash-down');
     }
 
     // Stats    
@@ -80,7 +74,7 @@
             ['CEO', ov.ceo],
             ['Headquarters', ov.hq], 
             ['Employees', ov.employees], 
-            ['Website', ov.website]
+            ['Website', `<a href="${ov.website}" target="_blank" rel="noopener" class="ts-website-link">Official Website</a>`]
         ];
         $('#overview-grid').innerHTML = items.map(([label, value]) => `
             <div class="ts-overview-item">
@@ -221,13 +215,17 @@
             </div>`;
         } else {
             wrap.innerHTML = items.map(n => `
-                <div class="ts-news-card lift">
-                    <div class="ts-news-card__thumb" style="background:linear-gradient(135deg, ${n.colorA}, ${n.colorB})"></div>
+                <a href="${n.url}" target="_blank" rel="noopener" class="ts-news-card lift">
+                    <img class="ts-news-card__thumb" src="${n.image}" alt="${n.headline}">
                     <div class="ts-news-card__body">
                         <div class="ts-news-card__headline">${n.headline}</div>
-                        <div class="ts-news-card__meta"><span>${n.source}</span><span>·</span><span>${n.publishedAgo}</span></div>
+                        <div class="ts-news-card__meta">
+                            <span>${n.source}</span>
+                            <span>·</span>
+                            <span>${n.publishedAgo}</span>
+                        </div>
                     </div>
-                </div>`).join('');
+                </a>`).join('');
         }
         crossfadeIn($('#news-skeleton'), $('#news-content'));
     }
@@ -292,7 +290,6 @@
 
     window.TSUI = {
         renderHeader, 
-        flashPrice, 
         renderStats, 
         renderOverview, 
         renderTradePanel, 
