@@ -115,9 +115,11 @@
 
     function marketStatus() {
         const now = new Date();
-        const day = now.getUTCDay();
-        const estHour = (now.getUTCHours() - 4 + 24) % 24;
-        const minutes = estHour * 60 + now.getUTCMinutes();
+
+        const day = now.getDay();
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        const minutes = hour * 60 + minute;
         const isWeekday = day >= 1 && day <= 5;
         if (isWeekday && minutes >= 570 && minutes < 960) return 'open';
         if (isWeekday && ((minutes >= 240 && minutes < 570) || (minutes >= 960 && minutes < 1200))) return 'extended';
