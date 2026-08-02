@@ -12,6 +12,10 @@ from .services.markets import markets
 from django.core.cache import cache
 from .services.base import get_screening
 from .services.trending import get_trending_data
+from .services.Stock_Page.header_data import header
+from .services.Stock_Page.about import get_about
+from .services.Stock_Page.statistics import get_stats
+from .services.Stock_Page.news import get_news
 from .static.simulator.top_stocks import LANDING_STOCK_POOL
 import random
 # Create your views here.
@@ -339,10 +343,25 @@ def landing_page_market(request):
     return JsonResponse(landing_data, safe=False)
 
 
-
+@login_required
 def render_stock_page(request, symbol):
     context = {
         'symbol': symbol.upper()
     }
     return render(request, 'simulator/stock_page.html', context)
-    
+
+@login_required
+def get_stock_header(request, symbol):
+    return JsonResponse(header(symbol))
+
+@login_required
+def get_stock_about(request, symbol):
+    return JsonResponse(get_about(symbol))
+
+@login_required
+def get_stock_stats(request, symbol):
+    return JsonResponse(get_stats(symbol))
+
+@login_required
+def get_stock_news(request, symbol):
+    return JsonResponse(get_news(symbol), safe=False)

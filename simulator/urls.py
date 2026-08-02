@@ -18,4 +18,8 @@ urlpatterns = [
     path("api/trending", views.get_trending, name="trending_markets"),
     path("api/landing-market", views.landing_page_market, name="Landing_Page_market"),
     path('stock/<str:symbol>/', views.render_stock_page, name='stock_detail'),
+    path('stock/<str:symbol>/data/header', views.get_stock_header, name='stock_header'),
+    path('stock/<str:symbol>/data/about', views.get_stock_about, name='stock_about'),
+    path('stock/<str:symbol>/data/stats', views.get_stock_stats, name='stock_stats'),
+    path('stock/<str:symbol>/data/news', views.get_stock_news, name='stock_news'),
 ]
