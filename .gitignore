@@ -5,3 +5,5 @@ db.sqlite3
 .vscode
 # Ignore frontend testing folder
 Frontend
+# Ignore yfinance testing  
+yfin.py
