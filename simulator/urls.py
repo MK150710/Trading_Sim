@@ -22,4 +22,8 @@ urlpatterns = [
     path('stock/<str:symbol>/data/about', views.get_stock_about, name='stock_about'),
     path('stock/<str:symbol>/data/stats', views.get_stock_stats, name='stock_stats'),
     path('stock/<str:symbol>/data/news', views.get_stock_news, name='stock_news'),
+    path('stock/<str:symbol>/data/financials', views.get_stock_financials, name='stock_financials'),
+    path('stock/<str:symbol>/data/chart', views.get_stock_chart, name='stock_chart'),
+    path('stock/<str:symbol>/data/order_hist', views.get_stock_orders, name='stock_order'),
+    path('stock/<str:symbol>/data/position', views.get_stock_position, name='stock_position'),
 ]
