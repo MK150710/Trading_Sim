@@ -1,60 +1,84 @@
 import re
+import pandas as pd
 import yfinance as yf
 
+
+def safe(value):
+    return None if pd.isna(value) else value
+
+
 def get_about(symbol):
-    ticker = yf.Ticker(symbol)
-    info = ticker.info
+    try:
+        ticker = yf.Ticker(symbol)
+        info = ticker.info
 
-    officers = info.get("companyOfficers", [])
+        officers = info.get("companyOfficers") or []
 
-    ceo = next(
-        (
-            officer.get("name")
-            for officer in officers
-            if "ceo" in officer.get("title", "").lower()
-            or "chief executive" in officer.get("title", "").lower()
-        ),
-        "N/A",
-    )
+        ceo = next(
+            (
+                safe(officer.get("name"))
+                for officer in officers
+                if isinstance(officer, dict)
+                and (
+                    "ceo" in officer.get("title", "").lower()
+                    or "chief executive" in officer.get("title", "").lower()
+                )
+            ),
+            "N/A",
+        )
 
-    summary = info.get("longBusinessSummary", "")
+        summary = safe(info.get("longBusinessSummary")) or ""
 
-    temp = (
-        summary
-        .replace("Inc.", "Inc•")
-        .replace("Corp.", "Corp•")
-        .replace("Ltd.", "Ltd•")
-        .replace("Co.", "Co•")
-        .replace("PLC.", "PLC•")
-        .replace("N.V.", "N•V•")    
-        .replace("S.A.", "S•A•")
-    )
+        temp = (
+            summary
+            .replace("Inc.", "Inc•")
+            .replace("Corp.", "Corp•")
+            .replace("Ltd.", "Ltd•")
+            .replace("Co.", "Co•")
+            .replace("PLC.", "PLC•")
+            .replace("N.V.", "N•V•")
+            .replace("S.A.", "S•A•")
+        )
 
-    match = re.search(r'(?<=\.)\s', temp)
+        match = re.search(r"(?<=\.)\s", temp)
 
-    if match:
-        one_line_summary = summary[:match.start() + 1]
-    else:
-        one_line_summary = summary
+        if match:
+            one_line_summary = summary[: match.start() + 1]
+        else:
+            one_line_summary = summary
 
-    parts = [
-        info.get("city"),
-        info.get("state"),
-        info.get("country"),
-    ]
-    headquarters = ", ".join(filter(None, parts)) or "N/A"
-    employees = info.get("fullTimeEmployees")
-    employees = f"{employees:,}" if employees else "N/A"
+        parts = [
+            safe(info.get("city")),
+            safe(info.get("state")),
+            safe(info.get("country")),
+        ]
 
-    website = info.get("website") or "N/A"
+        headquarters = ", ".join(filter(None, parts)) or "N/A"
 
-    return {
-        "name": info.get("longName", "N/A"),
-        "sector": info.get("sector", "N/A"),
-        "industry": info.get("industry", "N/A"),
-        "ceo": ceo,
-        "hq": headquarters,
-        "employees": employees,
-        "website": website,
-        "description": one_line_summary,
-    }
+        employees = safe(info.get("fullTimeEmployees"))
+        employees = f"{employees:,}" if employees else "N/A"
+
+        website = safe(info.get("website")) or "N/A"
+
+        return {
+            "name": safe(info.get("longName")) or symbol,
+            "sector": safe(info.get("sector")) or "N/A",
+            "industry": safe(info.get("industry")) or "N/A",
+            "ceo": ceo,
+            "hq": headquarters,
+            "employees": employees,
+            "website": website,
+            "description": one_line_summary or "N/A",
+        }
+
+    except Exception:
+        return {
+            "name": symbol,
+            "sector": "N/A",
+            "industry": "N/A",
+            "ceo": "N/A",
+            "hq": "N/A",
+            "employees": "N/A",
+            "website": "N/A",
+            "description": "N/A",
+        }
