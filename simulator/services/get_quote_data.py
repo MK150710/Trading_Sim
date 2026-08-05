@@ -1,25 +1,61 @@
 import yfinance as yf
 from django.utils import timezone
-from .base import get_daily_candles 
+from .base import get_daily_candles
+import pandas as pd
+
+
+def safe(value):
+    return None if pd.isna(value) else value
+
 
 def get_data(symbol):
+    try:
+        ticker = yf.Ticker(symbol)
 
-    ticker = yf.Ticker(symbol)
-    history = ticker.history(period="2d")
-    df = ticker.history(period="1mo")
+        history = ticker.history(period="1mo")
 
-    current = history["Close"].iloc[-1]
-    previous = history["Close"].iloc[-2]
-    data = {
-        "symbol" : symbol,
-        "company_name" : ticker.info.get("shortName"),
-        "current_price": current,
-        "exchange" : ticker.info.get("exchange"),
-        "sparkline" : get_daily_candles(symbol),
-        "previous_close": previous,
-        "last_updated" : timezone.now(),
-        "is_featured" : True,
-        "volume" : int(df["Volume"].iloc[-1])
-    }
+        if history.empty or "Close" not in history.columns:
+            return None
 
-    return data
+        closes = history["Close"].dropna()
+
+        if len(closes) < 2:
+            return None
+
+        current = float(closes.iloc[-1])
+        previous = float(closes.iloc[-2])
+
+        info = ticker.info
+
+        company_name = safe(info.get("shortName"))
+        exchange = safe(info.get("exchange"))
+        sparkline = get_daily_candles(symbol)
+
+        # Skip if any required data is missing
+        if (
+            company_name is None
+            or exchange is None
+            or len(sparkline) != 7
+        ):
+            return None
+
+        volume = 0
+        if "Volume" in history.columns:
+            volumes = history["Volume"].dropna()
+            if not volumes.empty:
+                volume = int(volumes.iloc[-1])
+
+        return {
+            "symbol": symbol,
+            "company_name": company_name,
+            "current_price": current,
+            "exchange": exchange,
+            "sparkline": sparkline,
+            "previous_close": previous,
+            "last_updated": timezone.now(),
+            "is_featured": True,
+            "volume": volume,
+        }
+
+    except Exception:
+        return None
