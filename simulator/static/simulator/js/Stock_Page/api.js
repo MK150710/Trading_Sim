@@ -17,7 +17,13 @@
         },
 
         async getChart(symbol, timeframe) {
-            return window.MockData.getChart(symbol, timeframe);
+            const response = await fetch(`/stock/${symbol}/data/chart?range=${timeframe}`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch chart.");
+            }
+
+            return await response.json();
         },
 
         async getCompanyOverview(symbol) {
@@ -51,15 +57,33 @@
         },
 
         async getFinancials(symbol) {
-            return window.MockData.getFinancials(symbol);
+            const response = await fetch(`/stock/${symbol}/data/financials`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch company finances.");
+            }
+
+            return await response.json();
         },
 
         async getOrders(symbol) {
-            return window.MockData.getOrders(symbol);
+            const response = await fetch(`/stock/${symbol}/data/order_hist`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch chart.");
+            }
+
+            return await response.json();
         },
 
         async getPosition(symbol) {
-            return window.MockData.getPosition(symbol);
+            const response = await fetch(`/stock/${symbol}/data/position`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch company overview.");
+            }
+
+            return await response.json();
         },
 
         async getAccount() {
