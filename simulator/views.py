@@ -16,6 +16,8 @@ from .services.Stock_Page.header_data import header
 from .services.Stock_Page.about import get_about
 from .services.Stock_Page.statistics import get_stats
 from .services.Stock_Page.news import get_news
+from .services.Stock_Page.financials import get_financials
+from .services.Stock_Page.chart import get_chart
 from .static.simulator.top_stocks import LANDING_STOCK_POOL
 import random
 # Create your views here.
@@ -365,3 +367,75 @@ def get_stock_stats(request, symbol):
 @login_required
 def get_stock_news(request, symbol):
     return JsonResponse(get_news(symbol), safe=False)
+
+@login_required
+def get_stock_financials(request, symbol):
+    return JsonResponse(get_financials(symbol), safe=False)
+
+@login_required
+def get_stock_orders(request, symbol):
+    transactions = Transaction.objects.filter(
+        portfolio = request.user.portfolio,
+        stock__symbol__iexact = symbol
+    ).order_by("-traded_at")
+
+    orders = []
+
+    for transaction in transactions:
+        orders.append({
+            "side":  transaction.transaction_type.lower(),
+            "shares": transaction.shares_traded,
+            "price": float(transaction.price_on_trade),
+            "total": float(transaction.price_on_trade * transaction.shares_traded),
+            "time": transaction.traded_at.strftime("%I:%M %p"),
+            "date": transaction.traded_at.strftime("%b %d, %Y"),
+        })
+
+    return JsonResponse(orders, safe=False)
+
+@login_required
+def get_stock_chart(request, symbol):
+
+    range_ = request.GET.get("range", "1M")
+    return JsonResponse(get_chart(symbol, range_), safe=False)
+
+@login_required
+def get_stock_position(request, symbol):
+
+    try:
+        holding = Holding.objects.select_related("stock", "portfolio").get(
+            portfolio__user=request.user,
+            stock__symbol=symbol
+        )
+
+    except Holding.DoesNotExist:
+        return JsonResponse(None, safe=False)
+
+    total = holding.total_investment
+    avgBuy = holding.avg_buy_price
+    qty = holding.quantity
+    current_price = holding.stock.current_price
+    value = qty* current_price
+    prev_close = holding.stock.previous_close
+    unrealisedPL = value - total
+    unrealisedPLPercent = (unrealisedPL / total) * 100
+    today_returns = qty * (current_price - prev_close)
+
+    portfolio = request.user.portfolio 
+    portfolioValue = portfolio.current_balance + sum(
+        h.quantity * h.stock.current_price
+        for h in portfolio.holdings.select_related("stock")
+    )
+
+    allocationPercent = (value / portfolioValue) * 100
+
+    return JsonResponse({
+        "shares": qty,
+        "avgCost": float(avgBuy),
+        "totalInvested": float(total),
+        "currentValue": float(value),
+        "unrealizedPL": float(unrealisedPL),
+        "unrealizedPLPercent": float(unrealisedPLPercent),
+        "todayReturn": float(today_returns),
+        "allocationPercent": float(allocationPercent), 
+    })
