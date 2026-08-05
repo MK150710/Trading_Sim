@@ -127,15 +127,46 @@
     }
 
     const TIMEFRAMES = {
-        '1D': { points: 78, unit: 'minute', span: 1 },
-        '5D': { points: 65, unit: 'hour', span: 5 },
-        '1M': { points: 22, unit: 'day', span: 30 },
-        '3M': { points: 64, unit: 'day', span: 90 },
-        '6M': { points: 126, unit: 'day', span: 182 },
-        'YTD': { points: 140, unit: 'day', span: 200 },
-        '1Y': { points: 252, unit: 'day', span: 365 },
-        '5Y': { points: 60, unit: 'month', span: 1825 },
-        'MAX': { points: 96, unit: 'month', span: 3650 }
+        "1D": {
+            candles: 78,
+            interval: "5m",
+            period: "1d"
+        },
+        "1W": {
+            candles: 65,
+            interval: "1h",
+            period: "5d"
+        },
+        "1M": {
+            candles: 22,
+            interval: "1d",
+            period: "1mo"
+        },
+        "3M": {
+            candles: 65,
+            interval: "1d",
+            period: "3mo"
+        },
+        "6M": {
+            candles: 126,
+            interval: "1d",
+            period: "6mo"
+        },
+        "1Y": {
+            candles: 252,
+            interval: "1d",
+            period: "1y"
+        },
+        "5Y": {
+            candles: 260,
+            interval: "1wk",
+            period: "5y"
+        },
+        "MAX": {
+            candles: 300,
+            interval: "1mo",
+            period: "max"
+        }
     };
 
     function regimeSequence(rng, n) {
@@ -153,72 +184,166 @@
         return segs;
     }
 
-    function buildWalk(rng, n, volFactor) {
-        const segs = regimeSequence(rng, n);
-        const out = [1];
-        let level = 1;
-        segs.forEach(seg => {
-            for (let i = 0; i < seg.len && out.length < n; i++) {
-                let drift = 0, noise = (rng() - 0.5) * volFactor
-                if (seg.type === 'uptrend') drift = volFactor * 0.32;
-                else if (seg.type === 'downtrend') drift = -volFactor * 0.32;
-                else if (seg.type === 'pullback') drift = -volFactor * 0.18;
-                else if (seg.type === 'consolidation') { drift = 0; noise *= 0.35; }
-                else if (seg.type === 'spike') drift = (rng() > 0.5 ? 1 : -1) * volFactor * (2.4 + rng() * 2); 
-                level = Math.max(0.05, level + drift + noise);
-                out.push(level);
-            }
-        });
-        while (out.length < n) out.push(out[out.length - 1]);
-        return out.slice(0, n);
-    }
-
-    function labelFor(unit, idx, n, now) {
-        const d = new Date(now);
-        if (unit === 'minute') {
-            d.setHours(9, 30 + Math.round((idx / (n-1)) * 390), 0, 0);
-            return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        }
-        if (unit === 'hour') {
-            d.setDate(d.getDate() - Math.floor((n - 1 - idx) / 13));
-            return d.toLocaleDateString('en-US', { weekday: 'short' });
-        }
-        if (unit === 'day') {
-            d.setDate(d.getDate() - (n - 1 - idx));
-            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-        d.setMonth(d.getMonth() - (n - 1 - idx));
-        return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-    }
-
-    function getChart(symbol, timeframe) {
-        const sym = symbol.toUpperCase();
-        const tf = TIMEFRAMES[timeframe] || TIMEFRAMES['1M'];
-        const stock = getStock(sym);
-        const rng = rngFor(sym + ':chart:' + timeframe);
-        const volMap = { minute: 0.0016, hour: 0.006, day: 0.014, month: 0.05};
-        const walk = buildWalk(rng, tf.points, volMap[tf.unit]);
-
-        // Make it so series ends at current level price
-        // Keep generated shape
-        const rawStart = walk[0], rawEnd = walk[walk.length - 1];
-        const priceStartGuess = stock.price / (1 + (rng() - 0.45) * (tf.unit === 'minute' ? 0.01 : tf.unit === 'month' ? 0.9 : 0.22));
-        const prices = walk.map((v, i) => {
-            const t = i / (walk.length - 1);
-            const shapeVal = rawStart === rawEnd ? v : (v - rawStart) / (rawEnd - rawStart);
-            const base = priceStartGuess + (stock.price - priceStartGuess) * t;
-            const wiggle = (shapeVal - t) * stock.price * 0.18;
-            return round2(Math.max(0.5, base + wiggle));
-        });
-        prices[prices.length - 1] = stock.price;
-
+    function timeForIndex(index, total, timeframe) {
         const now = new Date();
-        const labels = prices.map((_, i) => labelFor(tf.unit, i, prices.length, now));
-        const volumes = prices.map(() => Math.floor(rng() * stock.avgVolume * 1.4 + stock.avgVolume * 0.3));
+        const date = new Date(now);
 
-        return { symbol: sym, timeframe, labels, prices, volumes, isIntraday: tf.unit === 'minute'};
+        switch (timeframe.interval) {
+            case "5m":
+                date.setMinutes(date.getMinutes() - (total - index - 1) * 5);
+                break;
+
+            case "1h":
+                date.setHours(date.getHours() - (total - index - 1));
+                break;
+
+            case "1d":
+                date.setDate(date.getDate() - (total - index - 1));
+                break;
+
+            case "1wk":
+                date.setDate(date.getDate() - (total - index - 1) * 7);
+                break;
+
+            case "1mo":
+                date.setMonth(date.getMonth() - (total - index - 1));
+                break;
+        }
+
+        return Math.floor(date.getTime() / 1000);
     }
 
+    function generateCandles(symbol, timeframe) {
+        const rng = rngFor(`${symbol}:${timeframe.period}`);
+
+        const total = timeframe.candles;
+        const regimes = regimeSequence(rng, total);
+
+        const candles = [];
+
+        let close = round2(20 + rng() * 480);
+
+        for (const regime of regimes) {
+
+            let drift = 0;
+            let volatility = 0.012;
+
+            switch (regime.type) {
+
+                case "uptrend":
+                    drift = 0.003;
+                    volatility = 0.010;
+                    break;
+
+                case "downtrend":
+                    drift = -0.003;
+                    volatility = 0.010;
+                    break;
+
+                case "pullback":
+                    drift = -0.0015;
+                    volatility = 0.013;
+                    break;
+
+                case "consolidation":
+                    drift = 0;
+                    volatility = 0.0045;
+                    break;
+
+                case "spike":
+                    drift = (rng() > 0.5 ? 1 : -1) * 0.02;
+                    volatility = 0.024;
+                    break;
+            }
+
+            for (let i = 0; i < regime.len && candles.length < total; i++) {
+
+                const open = close;
+
+                const pctMove =
+                    drift +
+                    (rng() - 0.5) * volatility;
+
+                close = round2(
+                    Math.max(
+                        1,
+                        open * (1 + pctMove)
+                    )
+                );
+
+                const wickSize =
+                    Math.abs(close - open) * (0.6 + rng());
+
+                const high = round2(
+                    Math.max(open, close) +
+                    wickSize * rng()
+                );
+
+                const low = round2(
+                    Math.max(
+                        0.5,
+                        Math.min(open, close) -
+                        wickSize * rng()
+                    )
+                );
+
+                const body = Math.abs(close - open);
+
+                const baseVolume =
+                    500000 +
+                    rng() * 4500000;
+
+                const volume = Math.floor(
+                    baseVolume *
+                    (1 + body / open * 18)
+                );
+
+                candles.push({
+                    time: timeForIndex(
+                        candles.length,
+                        total,
+                        timeframe
+                    ),
+                    open: round2(open),
+                    high,
+                    low,
+                    close,
+                    volume
+                });
+            }
+        }
+
+        return candles;
+    }
+
+    function getChart(symbol, timeframeName) {
+        const timeframe = TIMEFRAMES[timeframeName] || TIMEFRAMES["1M"];
+
+        const candles = generateCandles(symbol, timeframe);
+
+        const first = candles[0];
+        const last = candles[candles.length - 1];
+
+        const high = Math.max(...candles.map(c => c.high));
+        const low = Math.min(...candles.map(c => c.low));
+
+        const change = round2(last.close - first.open);
+        const changePercent = round2((change / first.open) * 100);
+
+        return {
+            symbol: symbol.toUpperCase(),
+            timeframe: timeframeName,
+
+            candles,
+
+            stats: {
+                change,
+                changePercent,
+                high,
+                low
+            }
+        };
+    }
     // conpany overview
     function getCompanyOverview(symbol) {
         const s = getStock(symbol);

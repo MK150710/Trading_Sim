@@ -27,19 +27,32 @@
         });
     }
 
-    function renderChartRangeSummary(series) {
-        const first = series.prices[0], last = series.prices[series.prices.length - 1];
-        const change = last - first;
-        const pct = (change / first ) * 100;
-        const high = Math.max(...series.prices), low = Math.min(...series.prices);
-        const cls = change >= 0 ? 'text-gain' : 'text-loss';
+    function renderChartRangeSummary(stats) {
+        const cls = stats.change >= 0 ? 'text-gain' : 'text-loss';
+
         document.getElementById('chart-range-summary').innerHTML = `
-            <div class="item">Period Change<b class="tabular ${cls}">${TSFormat.sign(change)}${change.toFixed(2)} (${TSFormat.pct(pct)})</b></div>
-            <div class="item">Period High<b class="tabular">${TSFormat.money(high)}</b></div>
-            <div class="item">Period Low<b class="tabular">${TSFormat.money(low)}</b></div>
+            <div class="item">
+                Period Change
+                <b class="tabular ${cls}">
+                    ${TSFormat.sign(stats.change)}
+                    ${stats.change.toFixed(2)}
+                    (${TSFormat.pct(stats.changePercent)})
+                </b>
+            </div>
+            <div class="item">
+                Period High
+                <b class="tabular">
+                    ${TSFormat.money(stats.high)}
+                </b>
+            </div>
+            <div class="item">
+                Period Low
+                <b class="tabular">
+                    ${TSFormat.money(stats.low)}
+                </b>
+            </div>
         `;
     }
-
     function revealChartSection() {
         const sk = document.getElementById('chart-skeleton');
         const content = document.getElementById('chart-content');
@@ -51,16 +64,16 @@
         }
     }
 
-    async function loadChart(symbol, timeframe, animate) {
+    async function loadChart(symbol, timeframe) {
         revealChartSection();
         const series = await API.getChart(symbol, timeframe);
         if (!state.chart) {
-            state.chart = new StockChart(document.getElementById('chart-canvas'), document.getElementById('chart-tooltip'));
-        } else {
-            state.chart._resize();
+            state.chart = new StockChart(
+                document.getElementById("chart-canvas")
+            );
         }
-        state.chart.setData(series.labels, series.prices, { animate });
-        renderChartRangeSummary(series);
+        state.chart.setData(series.candles);
+        renderChartRangeSummary(series.stats);
     }
 
     function wireTimeframes(symbol) {
@@ -69,7 +82,7 @@
                 document.querySelectorAll('.ts-timeframes button').forEach(b => b.classList.remove('is-active'));
                 btn.classList.add('is-active');
                 state.timeframe = btn.dataset.tf;
-                await loadChart(state.symbol, state.timeframe, true);
+                await loadChart(state.symbol, state.timeframe);
             });
         });
     }
@@ -112,7 +125,7 @@
             state.account = account;
 
             TSUI.renderHeader(stock);
-            await loadChart(symbol, state.timeframe, false);
+            await loadChart(symbol, state.timeframe);
             TSUI.renderStats(await API.getStatistics(symbol));
             TSUI.renderOverview(await API.getCompanyOverview(symbol));
             TSUI.renderTradePanel(stock, account);

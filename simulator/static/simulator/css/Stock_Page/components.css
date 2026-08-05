@@ -395,38 +395,17 @@
     position: relative;
     height: 340px;
 }
-.ts-chart-wrap canvas {
+.ts-chart-wrap #chart-canvas {
     width: 100%;
     height: 100%;
-    display: block;
     cursor: crosshair;
+    overflow: hidden;
+    border-radius: var(--r-md);
 }
-.ts-chart-tooltip {
-    position: absolute;
-    pointer-events: none;
-    z-index: 5;
-    background: var(--color-text-primary);
-    color: var(--color-bg);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: var(--fs-xs);
-    transform: translate(-50%, calc(-100% - 12px));
-    opacity: 0;
-    transition: opacity var(--dur-fast);
-    white-space: nowrap;
-    box-shadow: var(--shadow-md);
-}
-.ts-chart-tooltip.is-visible {
-    opacity: 1;
-}
-.ts-chart-tooltip .price {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: var(--fs-sm);
-}
-.ts-chart-tooltip .date {
-    opacity: 0.65;
-    margin-top: 2px;
+
+.ts-chart-wrap #chart-canvas > div {
+    width: 100%;
+    height: 100%;
 }
 
 .ts-chart-range-summary {
