@@ -33,6 +33,42 @@
             </div>`;
     }
 
+    
+    const LOGO_COLORS = [
+        ["#6366F1", "#3B82F6"],
+        ["#10B981", "#059669"],
+        ["#F59E0B", "#EA580C"],
+        ["#EF4444", "#DC2626"],
+        ["#8B5CF6", "#EC4899"],
+        ["#06B6D4", "#0891B2"],
+    ];
+
+    function getLogoColors(symbol) {
+        let hash = 0;
+
+        for (const ch of symbol) {
+            hash += ch.charCodeAt(0);
+        }
+
+        return LOGO_COLORS[hash % LOGO_COLORS.length];
+    }
+
+    function searchSymbols(query) {
+        const q = query.trim().toUpperCase();
+
+        if (!q) return [];
+
+        return window.TOP_STOCKS
+            .filter(symbol => symbol.includes(q))
+            .slice(0, 6)
+            .map(symbol => ({
+                symbol,
+                name: symbol,
+                price: 0,
+                changePercent: 0,
+                colors: getLogoColors(symbol)
+            }));
+    }
     function initSearch({ input, panel, onSelect }) {
         let activeIndex = -1;
         let currentItems = [];
@@ -52,24 +88,46 @@
                 el.addEventListener('click', () => select(el.dataset.symbol));
             });
         }
-
         function renderDefault() {
-            const recent = getRecent();
-            let html = '';
+            const recent = getRecent()
+                .filter(symbol => window.TOP_STOCKS.includes(symbol))
+                .map(symbol => ({
+                    symbol,
+                    name: symbol,
+                    price: 0,
+                    changePercent: 0,
+                    colors: getLogoColors(symbol)
+                }));
+
+            const popular = window.TOP_STOCKS
+                .slice(0, 5)
+                .map(symbol => ({
+                    symbol,
+                    name: symbol,
+                    price: 0,
+                    changePercent: 0,
+                    colors: getLogoColors(symbol)
+                }));
+
+            let html = "";
+
             if (recent.length) {
-                html += `<div class="ts-search__group-label">Recent</div>` +
-                recent.map(sym => resultRow(window.MockData.searchSymbols(sym)[0] || window.MockData.popularSymbols(1)[0])).join('');
+                html += `<div class="ts-search__group-label">Recent</div>`;
+                html += recent.map(resultRow).join("");
             }
-            html += `<div class="ts-search__group-label">Popular</div>` +
-                window.MockData.popularSymbols(5).map(resultRow).join('');
+
+            html += `<div class="ts-search__group-label">Popular</div>`;
+            html += popular.map(resultRow).join("");
+
             panel.innerHTML = html;
-            currentItems = [...(recent.map(s => ({ symbol: s })).filter(x => x)), ...window.MockData.popularSymbols(5)];
-            panel.querySelectorAll('.ts-search__result').forEach(el => {
-                el.addEventListener('click', () => select(el.dataset.symbol));
+            currentItems = [...recent, ...popular];
+
+            panel.querySelectorAll(".ts-search__result").forEach(el => {
+                el.addEventListener("click", () => select(el.dataset.symbol));
             });
+
             activeIndex = -1;
         }
-
         function select(symbol) {
             pushRecent(symbol);
             close();
@@ -87,7 +145,7 @@
         input.addEventListener('input', () => {
             const q = input.value.trim();
             if (!q) { renderDefault(); return; }
-            render(window.MockData.searchSymbols(q), 'Results');
+            render(searchSymbols(q), 'Results');
         });
         input.addEventListener('keydown', (e) => {
             const rows = () => Array.from(panel.querySelectorAll('.ts-search__result'));

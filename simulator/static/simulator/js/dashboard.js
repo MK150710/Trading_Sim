@@ -435,68 +435,19 @@ async function initPortfolioChart() {
   window.addEventListener('resize', () => chart?.timeScale().fitContent());
 }
 
-/* ============================================================================
- * Search
- * ========================================================================== */
-
 function initSearch() {
-  const input = $('#searchInput');
-  const dropdown = $('#searchDropdown');
-  if (!input || !dropdown) return;
+    const input = document.getElementById("searchInput");
+    const panel = document.getElementById("searchDropdown");
 
-  const close = () => {
-    dropdown.hidden = true;
-    dropdown.innerHTML = '';
-  };
+    if (!input || !panel) return;
 
-  const runSearch = debounce(async (query) => {
-    if (!query.trim()) return close();
-    dropdown.hidden = false;
-    dropdown.innerHTML = `<div class="search__section-label">Searching…</div>`;
-    try {
-      const results = await api.search(query);
-      if (!results.length) {
-        dropdown.innerHTML = `<div class="search__empty">No matches for "${escapeHTML(query)}"</div>`;
-        return;
-      }
-      dropdown.innerHTML = `
-        <div class="search__section-label">Symbols</div>
-        ${results
-          .map((r) => {
-            const isUp = r.changePercent >= 0;
-            return `
-          <div class="search__result" data-symbol="${escapeHTML(r.symbol)}">
-            ${stockLogo(r.symbol, { size: 'sm' })}
-            <div class="search__result-info">
-              <div class="search__result-symbol">${escapeHTML(r.symbol)}</div>
-              <div class="search__result-name">${escapeHTML(r.name)}</div>
-            </div>
-            <div class="search__result-price">
-              <div class="num">${formatCurrency(r.price)}</div>
-              ${changeValueInline(r.changePercent)}
-            </div>
-          </div>`;
-          })
-          .join('')}`;
-    } catch (err) {
-      dropdown.innerHTML = `<div class="search__empty">Search unavailable right now</div>`;
-    }
-  }, 250);
-
-  input.addEventListener('input', (e) => runSearch(e.target.value));
-  input.addEventListener('focus', () => {
-    if (input.value.trim()) dropdown.hidden = false;
-  });
-  document.addEventListener('click', (e) => {
-    if (!dropdown.contains(e.target) && e.target !== input) close();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === '/' && document.activeElement !== input) {
-      e.preventDefault();
-      input.focus();
-    }
-    if (e.key === 'Escape') close();
-  });
+    TSSearch.initSearch({
+        input,
+        panel,
+        onSelect(symbol) {
+          window.location.href = `/stock/${symbol}`;
+        }
+    });
 }
 
 /* ============================================================================

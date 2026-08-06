@@ -45,6 +45,25 @@
     };
     const SYMBOL_LIST = Object.keys(COMPANIES);
 
+    const LOGO_COLORS = [
+        ["#6366F1", "#3B82F6"],
+        ["#10B981", "#059669"],
+        ["#F59E0B", "#EA580C"],
+        ["#EF4444", "#DC2626"],
+        ["#8B5CF6", "#EC4899"],
+        ["#06B6D4", "#0891B2"],
+    ];
+
+    function getLogoColors(symbol) {
+        let hash = 0;
+
+        for (const ch of symbol) {
+            hash += ch.charCodeAt(0);
+        }
+
+        return LOGO_COLORS[hash % LOGO_COLORS.length];
+    }
+
     function companyFor(symbol) {
         const sym = symbol.toUpperCase();
         if (COMPANIES[sym]) return { symbol: sym, ...COMPANIES[sym] };
@@ -511,7 +530,7 @@
         return SYMBOL_LIST
             .filter(s => s.includes(q) || COMPANIES[s].name.toUpperCase().includes(q))
             .slice(0, 6)
-            .map(s => ({ symbol: s, name: COMPANIES[s].name, colors: COMPANIES[s].colors, price: getStock(s).price, changePercent: getStock(s).changePercent }));
+            .map(s => ({ symbol: s, name: COMPANIES[s].name, colors: getLogoColors(s), price: getStock(s).price, changePercent: getStock(s).changePercent }));
     }
 
     function popularSymbols(limit) {
