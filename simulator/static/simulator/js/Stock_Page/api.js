@@ -86,6 +86,26 @@
             return await response.json();
         },
 
+        async updateWatchlist(symbol, action) {
+            const response = await fetch('/stock/data/watchlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': window.csrfToken,
+                },
+                body: JSON.stringify({
+                    symbol,
+                    action
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update watchlist.");
+            }
+
+            return await response.json();
+        },
+
         async getAccount() {
             return window.MockData.getAccount();
         },

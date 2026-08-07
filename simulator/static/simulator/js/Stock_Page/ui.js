@@ -159,27 +159,37 @@
 
     // Watchlist
     function initWatchlist(symbol, onChange) {
-        const key = 'tradesims:watchlist';
         const btn = $('#watchlist-btn');
-        const list = () => { try { return JSON.parse(localStorage.getItem(key)) || []; } catch (e) { return []; } };
-        const save = (l) => localStorage.setItem(key, JSON.stringify(l));
-        function refresh() {
-            const active = list().includes(symbol);
-            btn.classList.toggle('is-active', active);
-            btn.setAttribute('aria-pressed', String(active));
-            btn.setAttribute('aria-label', active ? 'Remove from watchlist' : 'Add to watchlist');
-        }
-        btn.addEventListener('click', () => {
-            const l = list();
-            const idx = l.indexOf(symbol);
-            if (idx >= 0) { l.splice(idx, 1); toast(`Removed ${symbol} from watchlist`); }
-            else { l.push(symbol); toast(`Added ${symbol} to watchlist`); }
-            save(l);
-            btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
-            refresh();
-            if (onChange) onChange(l.includes(symbol));
+        let active = btn.classList.contains('is-active');
+
+        btn.addEventListener('click', async () => {
+            try {
+                if (active) {
+                    await API.updateWatchlist(symbol, "remove");
+                    toast(`Removed ${symbol} from watchlist`);
+                    active = false;
+                } else {
+                    await API.updateWatchlist(symbol, "add");
+                    toast(`Added ${symbol} to watchlist`);
+                    active = true;
+                }
+
+                btn.classList.toggle('is-active', active);
+                btn.setAttribute('aria-pressed', String(active));
+                btn.setAttribute('aria-label', active ? 'Remove from watchlist' : 'Add to watchlist');
+                btn.title = active ? 'Remove from watchlist' : 'Add to watchlist';
+
+                btn.classList.remove('pop');
+                void btn.offsetWidth;
+                btn.classList.add('pop');
+
+                if (onChange) onChange(active);
+
+            } catch (err) {
+                console.error(err);
+                toast('Unable to update watchlist');
+            }
         });
-        refresh();
     }
 
     // Relates Stocks
