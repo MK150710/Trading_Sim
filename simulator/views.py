@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .models import Portfolio, Holding, Stock, Transaction, Wishlist, DailySnapshot
 from django.utils import timezone
@@ -20,6 +21,9 @@ from .services.Stock_Page.financials import get_financials
 from .services.Stock_Page.chart import get_chart
 from .static.simulator.top_stocks import LANDING_STOCK_POOL
 import random
+import json
+from django.shortcuts import get_object_or_404
+
 # Create your views here.
 
 def home(request):
@@ -347,8 +351,14 @@ def landing_page_market(request):
 
 @login_required
 def render_stock_page(request, symbol):
+    is_watclisted = Wishlist.objects.filter(
+        user = request.user,
+        stock__symbol=symbol.upper()
+    ).exists()
+
     context = {
-        'symbol': symbol.upper()
+        'symbol': symbol.upper(),
+        "is_watchlisted":is_watclisted
     }
     return render(request, 'simulator/stock_page.html', context)
 
@@ -439,3 +449,30 @@ def get_stock_position(request, symbol):
         "todayReturn": float(today_returns),
         "allocationPercent": float(allocationPercent), 
     })
+
+@login_required
+@require_POST
+def watchlist_change(request):
+    data = json.loads(request.body)
+
+    symbol = data.get("symbol", "".upper())
+    action = data.get("action")
+
+    stock = get_object_or_404(Stock, symbol=symbol)
+
+    if action == "add":
+        Wishlist.objects.get_or_create(
+            user = request.user,
+            stock = stock
+        )
+
+    elif action == "remove":
+        Wishlist.objects.filter(
+            user = request.user,
+            stock__symbol=symbol.upper()
+        ).delete()
+
+    else:
+        return JsonResponse({"error": "Invalid action."}, status=400)
+
+    return JsonResponse({"success": True})
