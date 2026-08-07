@@ -26,4 +26,5 @@ urlpatterns = [
     path('stock/<str:symbol>/data/chart', views.get_stock_chart, name='stock_chart'),
     path('stock/<str:symbol>/data/order_hist', views.get_stock_orders, name='stock_order'),
     path('stock/<str:symbol>/data/position', views.get_stock_position, name='stock_position'),
+    path('stock/data/watchlist', views.watchlist_change, name='change_watchlist'),
 ]
