@@ -23,8 +23,17 @@
                 <div>
                     <div style="display:flex;align-items:center;gap:10px">
                         <h1 id="stock-name" class="ts-stock-header__name">Apple Inc.</h1>
-                        <button id="watchlist-btn" class="ts-watch-btn" aria-pressed="false" aria-label="Add to watchlist" title="Add to watchlist">
-                            <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.8 7.1-.7Z" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                        <button
+                            id="watchlist-btn"
+                            class="ts-watch-btn {% if is_watchlisted %}is-active{% endif %}"
+                            aria-pressed="{{ is_watchlisted|yesno:'true,false' }}"
+                            aria-label="{% if is_watchlisted %}Remove from watchlist{% else %}Add to watchlist{% endif %}"
+                            title="{% if is_watchlisted %}Remove from watchlist{% else %}Add to watchlist{% endif %}">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2.5l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.8 7.1-.7Z"
+                                    stroke-width="1.6"
+                                    stroke-linejoin="round"/>
+                            </svg>
                         </button>
                     </div>
 
