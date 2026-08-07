@@ -60,7 +60,9 @@
         </main>
 
         <div id="toast-stack" class="ts-toast-stack" aria-live="polite"></div>
-
+        <script>
+            window.csrfToken = "{{ csrf_token }}";
+        </script>
         <script src="{% static 'simulator/js/Stock_page/api.js' %}"></script>
         <script src="{% static 'simulator/js/Stock_page/mockData.js' %}"></script>
         <script src="{% static 'simulator/js/Stock_page/theme.js' %}"></script>
