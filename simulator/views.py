@@ -476,3 +476,14 @@ def watchlist_change(request):
         return JsonResponse({"error": "Invalid action."}, status=400)
 
     return JsonResponse({"success": True})
+
+@login_required
+def get_stock_account_data(request, symbol):
+    portfolio = Portfolio.objects.get(user = request.user)
+    holding = portfolio.holdings.filter(stock__symbol=symbol).first()
+    data = {
+        "buyingPower": portfolio.current_balance,
+        "sharesOwned": holding.quantity if holding else 0
+    }
+
+    return JsonResponse(data)
