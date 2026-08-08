@@ -119,7 +119,7 @@
 
         const render = async () => {
             const stock = await API.getStock(symbol);
-            const account = await API.getAccount();
+            const account = await API.getAccount(symbol);
 
             state.stock = stock;
             state.account = account;
