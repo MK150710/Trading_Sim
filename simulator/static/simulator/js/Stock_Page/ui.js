@@ -89,16 +89,55 @@
 
     function updateTradeSummary(stock, account) {
         const est = round2(stock.price * tradeState.qty);
-        $('#trade-est-cost').textContent = fmt.money(est);
-        $('#trade-buying-power').textContent = fmt.money(account.buyingPower);
-        $('#trade-cash-remaining').textContent = fmt.money(round2(account.buyingPower - (tradeState.side === 'buy' ? est : 0)));
         const err = $('#trade-error');
-        const invalid = tradeState.side === 'buy' && est > account.buyingPower;
-        err.classList.toggle('is-visible', invalid);
-        if (invalid) err.textContent = 'Estimated cost exceeds available buying power.';
-        $('#trade-submit').disabled = invalid || tradeState.qty <= 0;
-        $('#trade-submit').textContent = (tradeState.side === 'buy' ? 'Buy ' : 'Sell ') + stock.symbol;
-        $('#trade-submit').className = 'btn ' + (tradeState.side === 'buy' ? 'btn-buy' : 'btn-sell');
+
+        if (tradeState.side === 'buy') {
+            $('#trade-summary-label-1').textContent = 'Estimated cost';
+            $('#trade-summary-label-2').textContent = 'Buying power';
+            $('#trade-summary-label-3').textContent = 'Cash remaining';
+            $('#trade-est-cost').textContent = fmt.money(est);
+            $('#trade-buying-power').textContent = fmt.money(account.buyingPower);
+            $('#trade-cash-remaining').textContent =
+                fmt.money(round2(Number(account.buyingPower) - est));
+
+            const invalid = est > account.buyingPower || tradeState.qty <= 0;
+            err.classList.toggle('is-visible', invalid);
+
+            if (invalid) {
+                err.textContent = est > account.buyingPower
+                    ? 'Estimated cost exceeds available buying power.'
+                    : 'Quantity must be at least 1.';
+            }
+            $('#trade-submit').disabled = invalid;
+        } else {
+            $('#trade-summary-label-1').textContent = 'Shares owned';
+            $('#trade-summary-label-2').textContent = 'Estimated proceeds';
+            $('#trade-summary-label-3').textContent = 'Cash after sale';
+            $('#trade-est-cost').textContent =
+                Number(account.sharesOwned || 0).toLocaleString();
+
+            $('#trade-buying-power').textContent = fmt.money(est);
+            $('#trade-cash-remaining').textContent =
+                fmt.money(round2(Number(account.buyingPower) + est));
+
+            const invalid =
+                tradeState.qty <= 0 ||
+                tradeState.qty > Number(account.sharesOwned || 0);
+
+            err.classList.toggle('is-visible', invalid);
+            if (invalid) {
+                err.textContent = tradeState.qty > Number(account.sharesOwned || 0)
+                    ? 'You do not own enough shares to sell.'
+                    : 'Quantity must be at least 1.';
+            }
+            $('#trade-submit').disabled = invalid;
+        }
+        
+        $('#trade-submit').textContent =
+            (tradeState.side === 'buy' ? 'Buy ' : 'Sell ') + stock.symbol;
+            
+        $('#trade-submit').className =
+            'btn ' + (tradeState.side === 'buy' ? 'btn-buy' : 'btn-sell');
     }
     function round2(n) { return Math.round(n * 100) / 100; }
 
