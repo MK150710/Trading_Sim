@@ -106,8 +106,14 @@
             return await response.json();
         },
 
-        async getAccount() {
-            return window.MockData.getAccount();
+        async getAccount(symbol) {
+            const response = await fetch(`/stock/${symbol}/data/user_details`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch company overview.");
+            }
+
+            return await response.json();
         },
 
         async getRelatedStocks(symbol) {
