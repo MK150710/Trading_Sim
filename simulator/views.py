@@ -579,3 +579,40 @@ def buy_and_sell(request):
         "quantity": quantity,
         "stock": stock.symbol
     })
+
+
+@login_required
+def get_holdings(request):
+    holdings = []
+    portfolio = Portfolio.objects.get(user=request.user)
+    all_holdings = Holding.objects.filter(portfolio=portfolio).order_by("stock__symbol")
+
+    for holding in all_holdings:
+        stock = holding.stock
+
+        market_value = holding.quantity * stock.current_price
+        profit_loss = market_value - holding.total_investment
+
+        if holding.total_investment != 0:
+            profit_loss_percent = (
+                profit_loss / holding.total_investment
+            ) * 100
+        else:
+            profit_loss_percent = 0
+
+        data = {
+            "symbol": stock.symbol,
+            "name": stock.company_name,
+            "price": stock.current_price,
+            "quantity": holding.quantity,
+            "avg_buy": holding.avg_buy_price,
+            "total_investment": holding.total_investment,
+            "market_val": market_value,
+            "profit_loss": profit_loss,
+            "profit_loss_percent": profit_loss_percent,
+        }
+
+        holdings.append(data)
+    return render(request, "simulator/holdings.html", {
+        "holdings": holdings
+    })
