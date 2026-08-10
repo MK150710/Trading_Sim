@@ -159,7 +159,6 @@
                 }
             );
 
-            window.TSAnim.observeReveal('.reveal');
         };  
 
         if (showLoading) {
@@ -187,6 +186,9 @@
         if (!window.location.pathname.startsWith('/stock/')) {
             window.history.replaceState({}, '', `/stock/${initialSymbol}`);
         }
+
+        
+        window.TSAnim.observeReveal('.reveal');
         await loadSymbol(initialSymbol, true);
     }
 
