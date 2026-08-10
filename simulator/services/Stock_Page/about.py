@@ -71,7 +71,8 @@ def get_about(symbol):
             "description": one_line_summary or "N/A",
         }
 
-    except Exception:
+    except Exception as e:
+        print(f"ABOUT ERROR for {symbol}: {repr(e)}")
         return {
             "name": symbol,
             "sector": "N/A",

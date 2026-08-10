@@ -5,7 +5,6 @@ import yfinance as yf
 def clean(value):
     return None if pd.isna(value) else value
 
-
 def get_stats(symbol):
     try:
         ticker = yf.Ticker(symbol)
@@ -27,7 +26,8 @@ def get_stats(symbol):
             "beta": clean(info.get("beta")),
         }
 
-    except Exception:
+    except Exception as e:
+        print(f"STATS ERROR for {symbol}: {repr(e)}")
         return {
             "open": None,
             "prevClose": None,

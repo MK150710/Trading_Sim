@@ -63,5 +63,6 @@ def get_financials(symbol):
 
         return rows
 
-    except Exception:
+    except Exception as e:
+        print(f"financials ERROR for {symbol}: {repr(e)}")
         return []

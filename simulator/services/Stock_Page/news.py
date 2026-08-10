@@ -11,7 +11,8 @@ def get_news(symbol):
     try:
         ticker = yf.Ticker(symbol)
         r_news = ticker.news or []
-    except Exception:
+    except Exception as e:
+        print(f"news ERROR for {symbol}: {repr(e)}")
         return []
 
     formatted_news = []
@@ -80,7 +81,8 @@ def get_news(symbol):
                 "url": url,
             })
 
-        except Exception:
+        except Exception as e:
+            print(f"news ERROR for {symbol}: {repr(e)}")
             continue
 
     return formatted_news
