@@ -12,6 +12,8 @@ class SimulatorConfig(AppConfig):
             return
 
         from .scheduler import scheduler
+        from .tasks import update_stocks
 
         if not scheduler.running:
+            update_stocks()
             scheduler.start()
