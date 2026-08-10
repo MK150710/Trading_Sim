@@ -37,5 +37,27 @@ window.TOP_STOCKS = [
 
 
     "SPY", "QQQ", "DIA", "VOO", "VTI",
-    "IWM", "ARKK", "XLK", "XLF", "XLE"
+    "IWM", "ARKK", "XLK", "XLF", "XLE",
+
+    "MRVL", "ANET",
+    "INTU", "CSCO", "IBM", "ACN", "ADSK", "FTNT",
+    "C", "USB", "PNC", "BK", "CME", "ICE",
+    "AMGN", "GILD", "REGN", "BMY", "CVS", "CI",
+    "MO", "TGT", "TJX",
+    "ETN", "EMR", "PH", "WM",
+    "OXY", "MPC", "PSX", "VLO",
+    "GOOG", "SNAP", "PINS", "RDDT", "SPOT",
+    "DKNG", "RBLX", "ROKU", "CRSP", "IONQ", "ASTS", "SPCX",
+"TTD",
+"SEZL",
+"LASR",
+"DAVE",
+"POST",
+"TEAM",
+"DOCS",
+"FIGS",
+"TWLO",
+"BTG",
+"LULU",
+"MELI",
 ]
