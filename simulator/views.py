@@ -24,6 +24,8 @@ import random
 import json
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from .services.get_quote_data import get_data
+from .services.create_new_stock import add_stock_to_supported_lists
 
 # Create your views here.
 
@@ -616,3 +618,23 @@ def get_holdings(request):
     return render(request, "simulator/holdings.html", {
         "holdings": holdings
     })
+
+@login_required
+@require_POST
+def check_new_stock(request):
+    symbol = request.POST.get("symbol", "").strip().upper()
+    try:
+        data = get_data(symbol)
+        if not data:
+            pass
+
+        data.pop("timezone", None)
+        Stock.objects.create(**data)
+        add_stock_to_supported_lists(symbol)
+        context = {
+            "symbol":symbol.upper()
+        }
+        return redirect("stock_detail", symbol=symbol)
+
+    except Exception as e:
+        return redirect("dashboard")
