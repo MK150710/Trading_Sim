@@ -30,4 +30,5 @@ urlpatterns = [
     path('stock/<str:symbol>/data/user_details', views.get_stock_account_data, name='account_data'),
     path('stock/data/trade', views.buy_and_sell, name='trade_shares'),
     path("holding/", views.get_holdings, name="holdings"),
+    path("stock/discover", views.check_new_stock, name="new_stock"),
 ]
