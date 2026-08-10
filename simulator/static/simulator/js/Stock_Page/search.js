@@ -25,11 +25,7 @@
                 <div class="ts-search__meta">
                 <div class="name">${item.symbol}</div>
                 <div class="sub">${item.name}</div>
-                </div>
-                <div class="ts-search__price">
-                <div class="tabular">$${item.price.toFixed(2)}</div>
-                <div class="tabular ${cls}" style="font-size:11px">${sign}${chg.toFixed(2)}%</div>
-                </div>
+                </div>  
             </div>`;
     }
 
@@ -77,10 +73,19 @@
             currentItems = items;
             activeIndex = -1;
             if (!items.length) {
-                panel.innerHTML = `<div class="ts-empty" style="padding:24px 8px">
-                <div class="title">No matches</div>
-                <div class="sub">Try a different symbol or company name.</div>
-                </div>`;
+                panel.innerHTML = `
+                    <div class="ts-empty" style="padding:24px 8px">
+                        <div class="title">Stock not currently supported</div>
+                        <div class="sub">
+                            Enter the exact symbol to check if it's available.
+                        </div>
+                        <form class="ts-stock-discover-form" method="POST" action="/stock/discover">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${window.csrfToken}">
+                            <input type="text" name="symbol" placeholder="Enter exact symbol" maxlength="10" required>
+                            <button type="submit">Check Stock</button>
+                        </form>
+                    </div>
+                `;
                 return;
             }
             panel.innerHTML = `<div class="ts-search__group-label">${groupLabel}</div>` + items.map(resultRow).join('');

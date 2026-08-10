@@ -241,10 +241,6 @@
                     <div class="sym">${s.symbol}</div>
                     <div class="nm">${s.name}</div>
                 </div>
-                <div>
-                    <div class="px tabular">${fmt.money(s.price)}</div>
-                    <div class="chg ${s.changePercent >= 0 ? 'text-gain' : 'text-loss'}" style="text-align:right">${fmt.pct(s.changePercent)}</div>
-                </div>
             </div>`).join('');
         wrap.querySelectorAll('.ts-related-item').forEach(el => {
             const go = () => onSelect(el.dataset.symbol);
