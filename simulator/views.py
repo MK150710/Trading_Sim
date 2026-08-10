@@ -23,6 +23,7 @@ from .static.simulator.top_stocks import LANDING_STOCK_POOL
 import random
 import json
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 # Create your views here.
 
@@ -487,3 +488,94 @@ def get_stock_account_data(request, symbol):
     }
 
     return JsonResponse(data)
+
+
+@require_POST
+@login_required
+def buy_and_sell(request):
+    data = json.loads(request.body)
+
+    side = data.get("side")
+    quantity = data.get("quantity")
+    symbol = data.get("stock")
+
+    portfolio = Portfolio.objects.get(user=request.user)
+    stock = Stock.objects.get(symbol=symbol)
+
+    with transaction.atomic():
+
+        quote = quantity * stock.current_price
+        if side == "buy":
+
+            holding, _ = Holding.objects.get_or_create(
+                portfolio=portfolio, 
+                stock=stock, 
+                defaults={
+                    "quantity": 0,
+                    "total_investment": 0
+                }
+            )
+
+            if portfolio.current_balance >= quote:
+                holding.quantity += quantity
+                holding.total_investment += quote
+                holding.avg_buy_price = holding.total_investment / holding.quantity
+                balance_before = portfolio.current_balance
+                portfolio.current_balance -= quote
+
+                Transaction.objects.create(
+                    portfolio=portfolio,
+                    stock=stock,
+                    transaction_type="BUY",
+                    shares_traded=quantity,
+                    price_on_trade=stock.current_price,
+                    balance_before=balance_before,
+                    balance_after=portfolio.current_balance
+                )
+                status = True
+
+                holding.save()
+                portfolio.save()
+
+            else:
+                status = False
+
+        elif side == "sell":
+            holding = Holding.objects.filter(
+                portfolio=portfolio,
+                stock=stock
+            ).first()
+
+            if holding and holding.quantity >= quantity:
+                holding.quantity -= quantity
+                holding.total_investment -= quantity * holding.avg_buy_price
+
+                balance_before = portfolio.current_balance
+
+                portfolio.current_balance += quote
+
+                Transaction.objects.create(
+                    portfolio=portfolio,
+                    stock=stock,
+                    transaction_type="SELL",
+                    shares_traded=quantity,
+                    price_on_trade=stock.current_price,
+                    balance_before=balance_before,
+                    balance_after=portfolio.current_balance
+                )
+
+                status = True
+
+                holding.save()
+                portfolio.save()
+
+            else:
+                status = False
+
+
+    return JsonResponse({
+        "success": status,
+        "side": side,
+        "quantity": quantity,
+        "stock": stock.symbol
+    })
