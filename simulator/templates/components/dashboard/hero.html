@@ -1,7 +1,13 @@
 <section class="hero reveal" id="heroSection">
-    <div class="hero__eyebrow">
-        <span id="heroEyebrowIcon"></span>
-        <span>Your portfolio</span>
+    <div class="hero__top">
+        <div class="hero__eyebrow">
+            <span id="heroEyebrowIcon"></span>
+            <span>Your portfolio</span>
+        </div>
+
+        <a href="{% url 'holdings' %}" class="hero__holdings-btn">
+            Your Holdings →
+        </a>
     </div>
     <h1 class="hero__greeting">
         <span id="greetingText">Good morning</span>,&nbsp;{{ request.user.username|title }}
