@@ -46,7 +46,7 @@ TOP_STOCKS = [
 
     "MRVL", "ANET",
     "INTU", "CSCO", "IBM", "ACN", "ADSK", "FTNT",
-    "C", "USB", "PNC", "BK", "CME", "ICE",
+    "C", "USB", "PNC", "CME", "ICE",
     "AMGN", "GILD", "REGN", "BMY", "CVS", "CI",
     "MO", "TGT", "TJX",
     "ETN", "EMR", "PH", "WM",
