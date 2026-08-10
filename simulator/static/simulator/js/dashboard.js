@@ -158,9 +158,7 @@ async function renderMarketOverview() {
   }
 }
 
-/* ============================================================================
- * Trending stocks
- * ========================================================================== */
+
 
 let watchlistSymbols = new Set();
 
@@ -202,14 +200,35 @@ function stockCardTemplate(s) {
     </div>`;
 }
 
-function bindWatchlistToggles(scope) {
+async function bindWatchlistToggles(scope) {
   $$('.watchlist-toggle', scope).forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       e.stopPropagation();
+
       const symbol = btn.dataset.symbol;
-      if (watchlistSymbols.has(symbol)) watchlistSymbols.delete(symbol);
-      else watchlistSymbols.add(symbol);
-      btn.classList.toggle('is-active');
+
+      if (btn.disabled) return;
+
+      const isWatched = watchlistSymbols.has(symbol);
+      const action = isWatched ? 'remove' : 'add';
+
+      btn.disabled = true;
+
+      try {
+        await api.updateWatchlist(symbol, action);
+
+        if (action === 'add') {
+            watchlistSymbols.add(symbol);
+            btn.classList.add('is-active');
+        } else {
+            watchlistSymbols.delete(symbol);
+            btn.classList.remove('is-active');
+        }
+      } catch (err) {
+        console.error('Failed to update watchlist:', err);
+      } finally {
+        btn.disabled = false;
+      }
     });
   });
 }
@@ -497,9 +516,6 @@ function initSearch() {
     });
 }
 
-/* ============================================================================
- * Boot
- * ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
   initChrome();
@@ -507,9 +523,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderHero();
   renderMarketOverview();
-  renderTrending();
+  renderWatchlist().then(() => {
+    renderTrending();
+  });
   renderMovers();
-  renderWatchlist();
   renderTransactions();
   renderNews();
   initPortfolioChart();
