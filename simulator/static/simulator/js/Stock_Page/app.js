@@ -139,13 +139,28 @@
             TSUI.wireTradePanel(
                 () => state.stock,
                 () => state.account,
-                ({ side, qty, stock}) => {
-                    TSUI.toast(`${side === 'buy' ? 'Bought' : 'Sold'} ${qty} share${qty === 1 ? '' : 's'} of ${stock.symbol} (simulated)`);
+                async ({side, qty, stock}) => {
+                    const response = await fetch('/stock/data/trade', {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': window.csrfToken
+                        },
+                        body: JSON.stringify({
+                            side: side,
+                            quantity: qty,
+                            stock: stock.symbol
+                        })
+                    });
+                    const data = await response.json();
+                    TSUI.toast(
+                        `${side === 'buy' ? 'Bought' : 'Sold'} ${qty} share${qty === 1 ? '' : 's'} of ${stock.symbol}`
+                    );
                 }
             );
 
             window.TSAnim.observeReveal('.reveal');
-        };
+        };  
 
         if (showLoading) {
             setTimeout(render, 850);
