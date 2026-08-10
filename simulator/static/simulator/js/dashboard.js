@@ -284,45 +284,92 @@ async function renderWatchlist() {
   }
 }
 
-/* ============================================================================
- * Transactions
- * ========================================================================== */
+let transactionsExpanded = false;
 
 async function renderTransactions() {
-  const container = $('#transactionsTable');
-  container.innerHTML = skeletonRows(6);
-  try {
-    const txs = await api.getTransactions();
-    if (!txs.length) return renderEmpty(container.closest('.card'), { title: 'No transactions yet' });
+    const container = $('#transactionsTable');
+    const toggle = $('#transactionsToggle');
 
-    container.innerHTML = txs
-      .map((tx) => {
-        const isBuy = tx.type === 'buy';
-        return `
-        <tr>
-          <td class="cell-name">
-            ${stockLogo(tx.symbol, { size: 'sm' })}
-            <div>
-              <div class="cell-symbol">${escapeHTML(tx.symbol)}</div>
-              <div class="cell-sub">${escapeHTML(tx.name)}</div>
-            </div>
-          </td>
-          <td><span class="pill ${isBuy ? 'pill--bull' : 'pill--bear'}">${isBuy ? 'Buy' : 'Sell'}</span></td>
-          <td class="is-numeric num">${tx.shares}</td>
-          <td class="is-numeric num">${formatCurrency(tx.price)}</td>
-          <td class="is-numeric num">${formatCurrency(tx.total)}</td>
-          <td class="text-tertiary">${formatDate(tx.date, 'short')}</td>
-        </tr>`;
-      })
-      .join('');
-  } catch (err) {
-    renderError(container.closest('.card'), { title: "Couldn't load transactions", onRetry: renderTransactions });
-  }
+    container.innerHTML = skeletonRows(6);
+
+    try {
+        const txs = await api.getTransactions();
+
+        if (!txs.length) {
+            toggle.style.display = 'none';
+            return renderEmpty(
+                container.closest('.card'),
+                { title: 'No transactions yet' }
+            );
+        }
+
+        container.innerHTML = txs
+            .map((tx, index) => {
+                const isBuy = tx.type === 'buy';
+
+                return `
+                <tr ${index >= 5 && !transactionsExpanded ? 'style="display:none"' : ''}>
+                    <td class="cell-name">
+                        ${stockLogo(tx.symbol, { size: 'sm' })}
+                        <div>
+                            <div class="cell-symbol">${escapeHTML(tx.symbol)}</div>
+                            <div class="cell-sub">${escapeHTML(tx.name)}</div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="pill ${isBuy ? 'pill--bull' : 'pill--bear'}">
+                            ${isBuy ? 'Buy' : 'Sell'}
+                        </span>
+                    </td>
+
+                    <td class="is-numeric num">${tx.shares}</td>
+                    <td class="is-numeric num">${formatCurrency(tx.price)}</td>
+                    <td class="is-numeric num">${formatCurrency(tx.total)}</td>
+                    <td class="text-tertiary">${formatDate(tx.date, 'short')}</td>
+                </tr>`;
+            })
+            .join('');
+
+        // Only show the button if there are more than 5 transactions
+        toggle.style.display = txs.length > 5 ? 'block' : 'none';
+
+        toggle.textContent = transactionsExpanded
+            ? 'Show less'
+            : 'Show all';
+
+    } catch (err) {
+        toggle.style.display = 'none';
+
+        renderError(
+            container.closest('.card'),
+            {
+                title: "Couldn't load transactions",
+                onRetry: renderTransactions
+            }
+        );
+    }
 }
 
-/* ============================================================================
- * News
- * ========================================================================== */
+const transactionsToggle = $('#transactionsToggle');
+
+transactionsToggle.addEventListener('click', () => {
+    transactionsExpanded = !transactionsExpanded;
+
+    const rows = $('#transactionsTable').querySelectorAll('tr');
+
+    rows.forEach((row, index) => {
+        if (index >= 5) {
+            row.style.display = transactionsExpanded ? '' : 'none';
+        }
+    });
+
+    transactionsToggle.textContent = transactionsExpanded
+        ? 'Show less'
+        : 'Show all';
+});
+
+/*news*/ 
 
 async function renderNews() {
   const container = $('#newsContainer');
