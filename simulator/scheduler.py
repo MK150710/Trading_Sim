@@ -4,9 +4,11 @@ from .tasks import update_stocks
 scheduler = BackgroundScheduler()
 
 scheduler.add_job(
-    update_stocks, 
+    update_stocks,
     trigger="interval",
-    minutes=30,
+    minutes=1,
     id="update_stocks",
-    replace_existing=True
+    replace_existing=True,
+    max_instances=1,
+    coalesce=True,
 )
