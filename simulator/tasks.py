@@ -2,7 +2,6 @@ from .static.simulator.top_stocks import TOP_STOCKS
 from .services.get_quote_data import get_data
 from .models import Stock
 from math import isnan
-from time import sleep
 
 def update_stocks():
 
@@ -25,8 +24,6 @@ def update_stocks():
 
             print(f"{symbol} completed")
             stock.save()
-
-            sleep(30)
 
         except Exception as e:
             print(f"Exception at stock {symbol}: {e}")
