@@ -1,6 +1,4 @@
 from django.apps import AppConfig
-import os
-
 
 class SimulatorConfig(AppConfig):
     name = 'simulator'
@@ -8,12 +6,7 @@ class SimulatorConfig(AppConfig):
 
     def ready(self):
 
-        if os.environ.get("RUN_MAIN") != "true":
-            return
-
         from .scheduler import scheduler
-        from .tasks import update_stocks
 
         if not scheduler.running:
-
             scheduler.start()
