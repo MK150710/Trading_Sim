@@ -26,6 +26,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from .services.get_quote_data import get_data
 from .services.create_new_stock import add_stock_to_supported_lists
+from .services.Stock_Page.optimised import all_stock_data
 
 # Create your views here.
 
@@ -371,19 +372,23 @@ def get_stock_header(request, symbol):
 
 @login_required
 def get_stock_about(request, symbol):
-    return JsonResponse(get_about(symbol))
+    data = all_stock_data(symbol)
+    return JsonResponse(data["about"])
 
 @login_required
 def get_stock_stats(request, symbol):
-    return JsonResponse(get_stats(symbol))
+    data = all_stock_data(symbol)
+    return JsonResponse(data["statistics"])
 
 @login_required
 def get_stock_news(request, symbol):
-    return JsonResponse(get_news(symbol), safe=False)
+    data = all_stock_data(symbol)
+    return JsonResponse(data["news"], safe=False)
 
 @login_required
 def get_stock_financials(request, symbol):
-    return JsonResponse(get_financials(symbol), safe=False)
+    data = all_stock_data(symbol)
+    return JsonResponse(data["financials"], safe=False)
 
 @login_required
 def get_stock_orders(request, symbol):
