@@ -6,7 +6,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(
     update_stocks,
     trigger="interval",
-    minutes=1,
+    seconds=10,
     id="update_stocks",
     replace_existing=True,
     max_instances=1,
