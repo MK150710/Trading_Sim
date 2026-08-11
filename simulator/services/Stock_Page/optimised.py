@@ -9,6 +9,7 @@ import yfinance as yf
 from django.core.cache import cache
 import re
 from datetime import datetime, timezone
+from ..yf_session import yf_session
 
 def safe(value):
     return None if pd.isna(value) else value
@@ -32,7 +33,7 @@ def all_stock_data(symbol):
     stats_data = {}
 
     try:
-        ticker = yf.Ticker(symbol)
+        ticker = yf.Ticker(symbol, session=yf_session)
         info = ticker.info
     except Exception as e:
         print(f"GET INFO ERROR for {symbol}: {repr(e)}")

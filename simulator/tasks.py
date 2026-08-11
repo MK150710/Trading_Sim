@@ -29,7 +29,7 @@ def update_stocks():
                 print(f"[{symbol}] ❌ get_data() returned None", flush=True)
                 continue
 
-            print(f"[{symbol}] Data received successfully", flush=True)
+            print(f"[{symbol}] Dat  a received successfully", flush=True)
             print(f"[{symbol}] Data keys: {stock_data.keys()}", flush=True)
 
             print(f"[{symbol}] Calling Stock.objects.get_or_create()...", flush=True)

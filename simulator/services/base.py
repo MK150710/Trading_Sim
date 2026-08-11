@@ -1,5 +1,6 @@
 import yfinance as yf
 from yahooquery import Screener
+from .yf_session import yf_session
 
 from ..models import Stock
 from .create_new_stock import add_stock_to_supported_lists
@@ -9,7 +10,7 @@ screener = Screener()
 
 def get_daily_candles(symbol, days=7):
     try:
-        ticker = yf.Ticker(symbol)
+        ticker = yf.Ticker(symbol, session=yf_session)
         history = ticker.history(period=f"{days + 2}d")
 
         if history.empty or "Close" not in history.columns:

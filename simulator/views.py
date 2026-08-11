@@ -14,10 +14,6 @@ from django.core.cache import cache
 from .services.base import get_screening
 from .services.trending import get_trending_data
 from .services.Stock_Page.header_data import header
-from .services.Stock_Page.about import get_about
-from .services.Stock_Page.statistics import get_stats
-from .services.Stock_Page.news import get_news
-from .services.Stock_Page.financials import get_financials
 from .services.Stock_Page.chart import get_chart
 from .static.simulator.top_stocks import LANDING_STOCK_POOL
 import random
