@@ -14,5 +14,7 @@ class SimulatorConfig(AppConfig):
         print(f" SCHEDULER RUNNING: {scheduler.running}", flush=True)
 
         if not scheduler.running:
+            from .tasks import update_stocks
+            update_stocks()
             scheduler.start()
             print(" SCHEDULER STARTED", flush=True)

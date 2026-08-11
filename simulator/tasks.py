@@ -81,6 +81,9 @@ def update_stocks():
                 flush=True
             )
             sleep(15)
-            
+
+        finally:
+            print(f"[{symbol}] 😴 Sleeping 15 seconds...", flush=True)
+            sleep(15)
 
     print("\n🔥🔥🔥 UPDATE_STOCKS FUNCTION FINISHED 🔥🔥🔥", flush=True)
