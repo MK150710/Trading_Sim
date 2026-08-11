@@ -80,6 +80,7 @@ def update_stocks():
                 f"[{symbol}] ❌ EXCEPTION: {type(e).__name__}: {e}",
                 flush=True
             )
+            sleep(15)
             
 
     print("\n🔥🔥🔥 UPDATE_STOCKS FUNCTION FINISHED 🔥🔥🔥", flush=True)
