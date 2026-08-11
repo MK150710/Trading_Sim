@@ -57,5 +57,5 @@ def get_data(symbol):
             "volume": volume,
         }
 
-    except Exception:
-        return None
+    except Exception as e:
+        print(f"[{symbol}] ❌ get_data ERROR: {type(e).__name__}: {e}", flush=True)
