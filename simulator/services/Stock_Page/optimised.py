@@ -285,9 +285,3 @@ def all_stock_data(symbol):
 
     return all_data
 
-
-data = all_stock_data("AAPL")
-
-print(data.keys())
-print(data["about"])
-print(data["statistics"])
