@@ -66,6 +66,6 @@ def get_chart(symbol, range_="1M"):
         }
     }
 
-    cache.set(cache_key, data, timeout=60 * 60 * 48)
+    cache.set(cache_key, data, timeout=60 * 60 * 24)
 
     return data
