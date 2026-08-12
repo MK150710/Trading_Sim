@@ -38,20 +38,12 @@
                 </p>
               </div>
 
-              <!-- Social / OAuth buttons (UI only — wire up in backend) -->
-              {% include "components/auth/Oauth.html" with text="register" %}
-
               <!-- Divider -->
               
               {% if error %}
                 {% include "components/auth/error.html" with error=error %}
               {% endif %}
-              <!-- ======= REGISTRATION FORM ======= -->
-              <!--
-                Django backend: point action to your register URL,
-                add {% csrf_token %}, and wire the `name` attributes
-                to your UserCreationForm / custom form fields.
-              -->
+
               <form
                 id="registerForm"
                 class="rg-form"
