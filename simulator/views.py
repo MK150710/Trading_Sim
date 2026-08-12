@@ -639,3 +639,6 @@ def check_new_stock(request):
 
     except Exception as e:
         return redirect("dashboard")
+
+def get_health(request):
+    return JsonResponse({"status": "ok"})
