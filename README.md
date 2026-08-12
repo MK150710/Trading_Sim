@@ -13,6 +13,12 @@
 - 100% uptime :(
   - The app is mostly functional, but sometimes it tends to crash, and takes a while to fix
 
+## Installation
+
+Clone the repository, create the `Proj_env` virtual environment, configure your `.env` file with Redis and PostgreSQL, install the requirements, run migrations, and start the Django development server.
+
+For the full setup instructions, see the [Install Guide](INSTALL.md).
+
 ## For hackclub Judges ( Or anyone interested )
 
 Check out the website:
