@@ -24,5 +24,5 @@ For the full setup instructions, see the [Install Guide](INSTALL.md).
 Check out the website:
 <br> [Video demo](https://youtu.be/TZq8kFMua1I)<br><br>
 Install on your own system:<br>
- [Install Guide](INSTALL.md)<br><br>
+ [Install Guide](Instal.md)<br><br>
 For any complaints or suggestions feel free to reach out on:<br> [Instagram](https://www.instagram.com/maanvik_157/)
