@@ -17,7 +17,7 @@
 
 Clone the repository, create the `Proj_env` virtual environment, configure your `.env` file with Redis and PostgreSQL, install the requirements, run migrations, and start the Django development server.
 
-For the full setup instructions, see the [Install Guide](INSTALL.md).
+For the full setup instructions, see the [Install Guide](Install.md).
 
 ## For hackclub Judges ( Or anyone interested )
 
