@@ -1,316 +1,78 @@
 {% extends "simulator/layout.html" %}
-{% load static %}
-
-{% block title %}Create Account — TradeSims{% endblock %}
-
+{% load static %}   
+{% block title %}TradeSims - Register{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'simulator/css/register.css' %}" />
+    <link rel="stylesheet" href="{% static 'simulator/css/register.css' %}">
 {% endblock %}
-
 {% block content %}
-
-<!-- ===================== REGISTER PAGE ===================== -->
-<main class="rg-page" aria-label="Registration page">
-
-  <!-- Ambient background -->
-  {% include "components/auth/background.html" with bg_class="rg-bg" orb_class="rg-orb" %}
-
-  <div class="container-fluid rg-container">
-    <div class="row justify-content-center align-items-center min-vh-100 py-5">
-      <div class="col-12 col-md-10 col-lg-9 col-xl-8">
-
-        <!-- Card shell -->
-        <div class="rg-card reveal-up">
-
-          <!-- ---- LEFT PANEL (brand / benefits) ---- -->
-           {% include "components/auth/left_panel_register.html" %}
-
-          <!-- ---- RIGHT PANEL (form) ---- -->
-          <section class="rg-panel-right" aria-labelledby="rg-form-heading">
-
-            <div class="rg-form-wrap">
-
-              <div class="rg-form-header">
-                <h2 class="rg-form-title" id="rg-form-heading">Create your account</h2>
-                <p class="rg-form-sub">
-                  Already have an account?
-                  <a href="{% url 'login' %}" class="rg-link">Log in</a>
-                </p>
-              </div>
-
-              <!-- Divider -->
-              
-              {% if error %}
-                {% include "components/auth/error.html" with error=error %}
-              {% endif %}
-
-              <form
-                id="registerForm"
-                class="rg-form"
-                method="POST"
-                action="{% url 'register' %}"
-                novalidate
-                aria-label="Registration form"
-              >
-                {% csrf_token %}
-
-                <!-- Name row -->
-                <div class="row g-3">
-                  <div class="col-sm-6">
-                    <div class="rg-field-group">
-                      <label for="id_first_name" class="rg-label">
-                        First name
-                        <span class="rg-required" aria-hidden="true">*</span>
-                      </label>
-                      <div class="rg-input-wrap">
-                        <i class="bi bi-person rg-input-icon" aria-hidden="true"></i>
-                        <input
-                          type="text"
-                          id="id_first_name"
-                          name="first_name"
-                          class="rg-input {% if form.first_name.errors %}rg-input--error{% endif %}"
-                          placeholder="Priya"
-                          autocomplete="given-name"
-                          required
-                          aria-required="true"
-                          aria-describedby="err-first_name"
-                          value="{{ form.first_name.value|default:'' }}"
-                        />
-                        <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
-                      </div>
-                      {% if form.first_name.errors %}
-                        <p class="rg-field-error" id="err-first_name" role="alert">{{ form.first_name.errors.as_text }}</p>
-                      {% else %}
-                        <p class="rg-field-error" id="err-first_name" role="alert" aria-hidden="true"></p>
-                      {% endif %}
-                    </div>
-                  </div>
-
-                  <div class="col-sm-6">
-                    <div class="rg-field-group">
-                      <label for="id_last_name" class="rg-label">
-                        Last name
-                        <span class="rg-required" aria-hidden="true">*</span>
-                      </label>
-                      <div class="rg-input-wrap">
-                        <i class="bi bi-person rg-input-icon" aria-hidden="true"></i>
-                        <input
-                          type="text"
-                          id="id_last_name"
-                          name="last_name"
-                          class="rg-input {% if form.last_name.errors %}rg-input--error{% endif %}"
-                          placeholder="Kapoor"
-                          autocomplete="family-name"
-                          required
-                          aria-required="true"
-                          aria-describedby="err-last_name"
-                          value="{{ form.last_name.value|default:'' }}"
-                        />
-                        <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
-                      </div>
-                      {% if form.last_name.errors %}
-                        <p class="rg-field-error" id="err-last_name" role="alert">{{ form.last_name.errors.as_text }}</p>
-                      {% else %}
-                        <p class="rg-field-error" id="err-last_name" role="alert" aria-hidden="true"></p>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Username -->
-                <div class="rg-field-group">
-                  <label for="id_username" class="rg-label">
-                    Username
-                    <span class="rg-required" aria-hidden="true">*</span>
-                  </label>
-                  <div class="rg-input-wrap">
-                    <i class="bi bi-at rg-input-icon" aria-hidden="true"></i>
-                    <input
-                      type="text"
-                      id="id_username"
-                      name="username"
-                      class="rg-input {% if form.username.errors %}rg-input--error{% endif %}"
-                      placeholder="priya_trades"
-                      autocomplete="username"
-                      required
-                      aria-required="true"
-                      aria-describedby="err-username hint-username"
-                      value="{{ form.username.value|default:'' }}"
-                    />
-                    <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
-                  </div>
-                  <p class="rg-field-hint" id="hint-username">Letters, digits, and @/./+/-/_ only. Max 150 characters.</p>
-                  {% if form.username.errors %}
-                    <p class="rg-field-error" id="err-username" role="alert">{{ form.username.errors.as_text }}</p>
-                  {% else %}
-                    <p class="rg-field-error" id="err-username" role="alert" aria-hidden="true"></p>
-                  {% endif %}
-                </div>
-
-                <!-- Email -->
-                <div class="rg-field-group">
-                  <label for="id_email" class="rg-label">
-                    Email address
-                    <span class="rg-required" aria-hidden="true">*</span>
-                  </label>
-                  <div class="rg-input-wrap">
-                    <i class="bi bi-envelope rg-input-icon" aria-hidden="true"></i>
-                    <input
-                      type="email"
-                      id="id_email"
-                      name="email"
-                      class="rg-input {% if form.email.errors %}rg-input--error{% endif %}"
-                      placeholder="priya@example.com"
-                      autocomplete="email"
-                      required
-                      aria-required="true"
-                      aria-describedby="err-email"
-                      value="{{ form.email.value|default:'' }}"
-                    />
-                    <span class="rg-input-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
-                  </div>
-                  {% if form.email.errors %}
-                    <p class="rg-field-error" id="err-email" role="alert">{{ form.email.errors.as_text }}</p>
-                  {% else %}
-                    <p class="rg-field-error" id="err-email" role="alert" aria-hidden="true"></p>
-                  {% endif %}
-                </div>
-
-                <!-- Password -->
-                <div class="rg-field-group">
-                  <label for="id_password1" class="rg-label">
-                    Password
-                    <span class="rg-required" aria-hidden="true">*</span>
-                  </label>
-                  <div class="rg-input-wrap">
-                    <i class="bi bi-lock rg-input-icon" aria-hidden="true"></i>
-                    <input
-                      type="password"
-                      id="id_password1"
-                      name="password1"
-                      class="rg-input {% if form.password1.errors %}rg-input--error{% endif %}"
-                      placeholder="Create a strong password"
-                      autocomplete="new-password"
-                      required
-                      aria-required="true"
-                      aria-describedby="err-password1 rg-strength-label"
-                    />
-                    <button
-                      type="button"
-                      class="rg-pw-toggle"
-                      data-target="id_password1"
-                      aria-label="Show password"
-                      aria-pressed="false"
-                    >
-                      <i class="bi bi-eye" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                  <!-- Strength meter -->
-                  <div class="rg-strength-wrap" aria-live="polite" aria-atomic="true">
-                    <div class="rg-strength-bar" id="strengthBar">
-                      <div class="rg-strength-fill" id="strengthFill"></div>
-                    </div>
-                    <span class="rg-strength-label" id="rg-strength-label"></span>
-                  </div>
-                  {% if form.password1.errors %}
-                    <p class="rg-field-error" id="err-password1" role="alert">{{ form.password1.errors.as_text }}</p>
-                  {% else %}
-                    <p class="rg-field-error" id="err-password1" role="alert" aria-hidden="true"></p>
-                  {% endif %}
-                </div>
-
-                <!-- Confirm password -->
-                <div class="rg-field-group">
-                  <label for="id_password2" class="rg-label">
-                    Confirm password
-                    <span class="rg-required" aria-hidden="true">*</span>
-                  </label>
-                  <div class="rg-input-wrap">
-                    <i class="bi bi-lock-fill rg-input-icon" aria-hidden="true"></i>
-                    <input
-                      type="password"
-                      id="id_password2"
-                      name="password2"
-                      class="rg-input {% if form.password2.errors %}rg-input--error{% endif %}"
-                      placeholder="Repeat your password"
-                      autocomplete="new-password"
-                      required
-                      aria-required="true"
-                      aria-describedby="err-password2"
-                    />
-                    <button
-                      type="button"
-                      class="rg-pw-toggle"
-                      data-target="id_password2"
-                      aria-label="Show confirm password"
-                      aria-pressed="false"
-                    >
-                      <i class="bi bi-eye" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                  {% if form.password2.errors %}
-                    <p class="rg-field-error" id="err-password2" role="alert">{{ form.password2.errors.as_text }}</p>
-                  {% else %}
-                    <p class="rg-field-error" id="err-password2" role="alert" aria-hidden="true"></p>
-                  {% endif %}
-                </div>
-
-                <!-- Password rules checklist -->
-                <ul class="rg-pw-rules" aria-label="Password requirements" id="pwRules">
-                  <li class="rg-pw-rule" id="rule-length"   data-rule="length">
-                    <i class="bi bi-circle" aria-hidden="true"></i> At least 8 characters
-                  </li>
-                  <li class="rg-pw-rule" id="rule-upper"    data-rule="upper">
-                    <i class="bi bi-circle" aria-hidden="true"></i> One uppercase letter
-                  </li>
-                  <li class="rg-pw-rule" id="rule-number"   data-rule="number">
-                    <i class="bi bi-circle" aria-hidden="true"></i> One number
-                  </li>
-                  <li class="rg-pw-rule" id="rule-special"  data-rule="special">
-                    <i class="bi bi-circle" aria-hidden="true"></i> One special character
-                  </li>
-                </ul>
-
-                <!-- Non-field errors (Django) -->
-                {% if form.non_field_errors %}
-                <div class="rg-form-alert" role="alert">
-                  <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
-                  {{ form.non_field_errors }}
-                </div>
-                {% endif %}
-
-                <!-- Submit -->
-                <button type="submit" class="rg-submit ts-ripple" id="submitBtn">
-                  <span class="rg-submit-text">Create free account</span>
-                  <span class="rg-submit-spinner" aria-hidden="true">
-                    <i class="bi bi-arrow-clockwise"></i>
-                  </span>
-                </button>
-
-                <p class="rg-disclaimer">
-                  <i class="bi bi-shield-lock" aria-hidden="true"></i>
-                  Your data is encrypted and never sold to third parties.
-                </p>
-
-              </form>
-              <!-- /REGISTRATION FORM -->
-
-            </div>
-          </section>
-          <!-- /RIGHT PANEL -->
-
+    <header class="site-header">
+        <div class="wrap header-inner">
+            <a href="{% url 'home' %}" class="logo">TradeSims</a>
+            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme" aria-pressed="false">
+                <svg class="icon icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                <svg class="icon icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
         </div>
-        <!-- /CARD -->
-
-      </div>
-    </div>
-  </div>
-
-</main>
-<!-- /REGISTER PAGE -->
-
+    </header>
+    <main class="auth-main">
+        <div class="auth-card">
+            <h1>Create your account</h1>
+            <p class="auth-sub">Already have an account? <a href="{% url 'login' %}" class="link-quiet">Login</a></p>
+            <form id="registerForm" method="POST" action="{% url 'register' %}" novalidate>
+                {% csrf_token %}
+                <div class="field-row">
+                    <div class="field">
+                        <label for="firstName">First name <span class="req">*</span></label>
+                        <input type="text" id="firstName" name="first_name" placeholder="Priya" autocomplete="given-name" required>
+                        <span class="field-error" id="firstNameError"></span>
+                    </div>
+                    <div class="field">
+                        <label for="lastName">Last name <span class="req">*</span></label>
+                        <input type="text" id="lastName" name="last_name" placeholder="Kapoor" autocomplete="family-name" required>
+                        <span class="field-error" id="lastNameError"></span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="username">Username <span class="req">*</span></label>
+                    <input type="text" id="username" name="username" placeholder="priya_trades" autocomplete="username" required>
+                    <span class="field-hint">Letters, digits, and @/./+/-/_ only. Max 150 characters.</span>
+                    <span class="field-error" id="usernameError"></span>
+                </div>
+                <div class="field">
+                    <label for="email">Email address <span class="req">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="priya@example.com" autocomplete="email" required>
+                    <span class="field-error" id="emailError"></span>
+                </div>
+                <div class="field">
+                    <label for="password">Password <span class="req">*</span></label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password1" placeholder="Create a strong password" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password" aria-pressed="false">Show</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="confirmPassword">Confirm password <span class="req">*</span></label>
+                    <div class="password-input">
+                        <input type="password" id="confirmPassword" name="password2" placeholder="Repeat your password" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle" id="confirmPasswordToggle" aria-label="Show password" aria-pressed="false">Show</button>
+                    </div>
+                    <span class="field-error" id="confirmPasswordError"></span>
+                </div>
+                <ul class="req-list" id="reqList">
+                    <li data-rule="length"><span class="req-dot"></span>At least 8 characters</li>
+                    <li data-rule="upper"><span class="req-dot"></span>One uppercase letter</li>
+                    <li data-rule="number"><span class="req-dot"></span>One number</li>
+                    <li data-rule="special"><span class="req-dot"></span>One special character</li>
+                </ul>
+                {% if error %}
+                    <p class="form-status" id="formStatus" role="alert">{{ error }}</p>
+                {% endif %}
+                <button type="submit" class="btn btn-primary btn-full" id="registerSubmit">Create Free account</button>
+            </form>
+        </div>
+    </main>
 {% endblock %}
-
 {% block extra_js %}
-<script src="{% static 'simulator/js/register.js' %}"></script>
+    <script src="{% static 'simulator/js/register.js' %}"></script>
 {% endblock %}
+

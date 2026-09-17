@@ -1,0 +1,17 @@
+{% extends "simulator/layout.html" %}
+
+{% block content %}
+
+    {% include "components/home/hero.html" %}
+    {% include "components/home/markets.html" %}
+    {% include "components/home/about.html" %}
+    {% include "components/home/features.html" %}
+    {% include "components/home/stats.html" %}
+    {% include "components/home/faq.html" %}
+    {% include "components/home/contact.html" %}
+
+{% endblock %}
+
+{% block extra_js %}
+{{ ticker|json_script:"ticker-data" }}
+{% endblock %}

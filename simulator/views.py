@@ -64,6 +64,7 @@ def home(request):
         "stock" : hero,
         "ticker" : ticker
     })
+
 def register(request):
     if request.method == "GET":
         return render(request, "simulator/register.html")
@@ -106,26 +107,24 @@ def register(request):
             auth_login(request, user)
             return redirect("dashboard")
 
-
 def login(request):
-    
     if request.method == "GET":
         return render(request, "simulator/login.html")
-    
+
     elif request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password
+        )
 
         if user is not None:
             auth_login(request, user)
             return redirect("dashboard")
 
-        else:
-            return render(request, "simulator/login.html", {
-                "error" : "Username or password incorrect"
-            })
+        return render(request, "simulator/login.html", {
+            "error": "Username or password incorrect"
+        })
         
 def logout(request):
     auth_logout(request)
