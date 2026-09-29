@@ -105,6 +105,21 @@ TOP_STOCKS = [
 "GNRC",
 "SDGR",
 "PBLS",
+"EXK",
+"EWTX",
+"WBD",
+"RLAY",
+"ORKA",
+"SECZ",
+"VG",
+"IMVT",
+"AR",
+"HUBS",
+"ERAS",
+"SRPT",
+"FSLY",
+"ACMR",
+"KVYO",
 ]   
 
 LANDING_STOCK_POOL = [

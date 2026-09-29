@@ -1,535 +1,291 @@
-/**
- * dashboard.js
- * ---------------------------------------------------------------------------
- * Controller for dashboard.html. Wires StockAPI (api.js) to the DOM using
- * the shared chrome/formatting helpers in ui.js and the motion helpers in
- * animations.js. Nothing here defines new styles or markup patterns beyond
- * what components.css already describes — this file only ever fills
- * containers that already exist in the template.
- * ---------------------------------------------------------------------------
- */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
 
-import { StockAPI } from './api.js';
-import {
-  $, $$, escapeHTML, debounce,
-  formatCurrency, formatSignedCurrency, formatPercent, formatCompactNumber,
-  formatDate, timeAgo, sentiment, symbolColor, stockLogo, icon,
-  skeletonCard, skeletonRows, renderEmpty, renderError,
-  initSidebar, initDropdown, initClock, initGreeting,
-} from './ui.js';
-import { revealOnScroll, revealStagger, animateCount, flashValue, setSentiment } from './animations.js';
+const STOCKS = [
+    "AAPL","MSFT","NVDA","AMZN","GOOGL","META","TSLA","AMD","AVGO","TSM",
+    "QCOM","MU","INTC","ARM","ASML","AMAT","LRCX","KLAC","ADI","TXN",
+    "PLTR","CRM","ORCL","ADBE","NOW","SNOW","CRWD","PANW","NET","DDOG",
+    "MDB","SHOP","UBER","JPM","BAC","WFC","GS","MS","BLK","V","MA",
+    "LLY","JNJ","UNH","ABBV","MRK","PFE","COST","WMT","HD","MCD",
+    "NKE","SBUX","DIS","NFLX","KO","PEP","CAT","GE","RTX","LMT",
+    "HON","BA","XOM","CVX","COP","TMUS","VZ","T","F","GM","GME",
+    "AMC","COIN","HOOD","MSTR","SMCI","SPY","QQQ","DIA","VOO","VTI",
+    "IWM","ARKK","XLK","XLF","XLE","GOOG","SNAP","PINS","SPOT","DKNG",
+    "RBLX","CRSP","IONQ","RKLB","SOFI","CAVA","HIMS","TTD","TEAM","TWLO",
+    "LULU","MELI","HPE","DELL","OKLO","SMR","KHC"
+];
 
-const api = new StockAPI();
+const root = document.documentElement;
+const themeButton = document.getElementById("themeToggle");
+const themeIcon = document.getElementById("themeIcon");
 
-/* ============================================================================
- * Small local helpers (sparklines + pills) — presentation glue that belongs
- * to this page, not to the generic ui.js toolkit.
- * ========================================================================== */
+root.dataset.theme = localStorage.getItem("tradesims-theme") || "dark";
 
-function sparklineSVG(points, isPositive, { width = 100, height = 32, strokeWidth = 1.75 } = {}) {
-  if (!points || points.length < 2) return '';
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const range = max - min || 1;
-  const stepX = width / (points.length - 1);
-  const coords = points.map((v, i) => {
-    const x = i * stepX;
-    const y = height - ((v - min) / range) * height;
-    return `${x.toFixed(2)},${y.toFixed(2)}`;
-  });
-  const colorVar = isPositive ? 'var(--bull)' : 'var(--bear)';
-  return `
-    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" width="100%" height="100%">
-      <polyline points="${coords.join(' ')}" fill="none" stroke="${colorVar}"
-        stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>`;
+themeButton.onclick = () => {
+    const light = root.dataset.theme === "light";
+    root.dataset.theme = light ? "dark" : "light";
+    localStorage.setItem("tradesims-theme", root.dataset.theme);
+    themeIcon.textContent = light ? "☀" : "☾";
+};
+
+themeIcon.textContent = root.dataset.theme === "light" ? "☾" : "☀";
+
+const get = async url => {
+    const r = await fetch(url);
+    if (!r.ok) throw Error(r.status);
+    return r.json();
+};
+
+const money = n => new Intl.NumberFormat("en-US", {
+    style: "currency", currency: "USD"
+}).format(n);
+
+const pct = n => `${n >= 0 ? "+" : ""}${Number(n).toFixed(2)}%`;
+const date = d => new Date(d).toLocaleDateString("en-US", {
+    month: "short", day: "numeric"
+});
+
+const cls = n => n >= 0 ? "up" : "down";
+
+function logo(symbol) {
+    return `<div class="stock-logo">${symbol.slice(0,2)}</div>`;
 }
 
-function changePill(changePercent) {
-  const dir = sentiment(changePercent);
-  const cls = dir === 'up' ? 'pill--bull' : dir === 'down' ? 'pill--bear' : 'pill--neutral';
-  const arrow = dir === 'down' ? icon('arrowDown') : icon('arrowUp');
-  return `<span class="pill ${cls}">${dir === 'flat' ? '' : arrow}${formatPercent(changePercent)}</span>`;
+function change(n) {
+    return `<span class="${cls(n)}">${pct(n)}</span>`;
 }
 
-function changeValueInline(changePercent) {
-  const dir = sentiment(changePercent);
-  const cls = dir === 'up' ? 'up' : dir === 'down' ? 'down' : 'flat';
-  const arrow = dir === 'down' ? icon('arrowDown') : icon('arrowUp');
-  return `<span class="change-value ${cls}">${dir === 'flat' ? '' : arrow}${formatPercent(changePercent)}</span>`;
+async function hero() {
+    const p = await get("/api/portfolio");
+    $("#heroTotal").textContent = money(p.totalValue);
+    $("#heroChange").textContent = `${p.todayChange >= 0 ? "+" : ""}${money(p.todayChange)}`;
+    $("#heroCash").textContent = money(p.buyingPower);
+    $("#heroPercent").innerHTML = change(p.todayChangePercent);
+    $("#heroChange").className = cls(p.todayChange);
 }
 
-/* ============================================================================
- * Chrome: icons, sidebar, clock, greeting, dropdowns
- * ========================================================================== */
-
-function mountStaticIcons() {
-  const map = {
-    sidebarLogoMark: 'logoMark',
-    navMenuBtn: 'menu',
-    searchIcon: 'search',
-    bellIcon: 'bell',
-    profileChevron: 'chevronDown',
-    heroEyebrowIcon: 'portfolio',
-  };
-  Object.entries(map).forEach(([id, name]) => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = icon(name);
-  });
-
-  $$('.nav-item[data-icon]').forEach((el) => {
-    const iconEl = $('.nav-item__icon', el);
-    if (iconEl) iconEl.innerHTML = icon(el.dataset.icon);
-  });
-
-  const collapseIcon = $('.collapse-icon');
-  if (collapseIcon) collapseIcon.innerHTML = icon('chevronLeft');
-}
-
-function initChrome() {
-  mountStaticIcons();
-  initSidebar();
-  initClock();
-  initGreeting();
-  initDropdown('notifTrigger', 'notifPanel');
-  initDropdown('profileTrigger', 'profilePanel');
-}
-
-/* ============================================================================
- * Hero
- * ========================================================================== */
-
-async function renderHero() {
-  try {
-    const portfolio = await api.getPortfolio();
-    const isUp = portfolio.todayChange >= 0;
-
-    animateCount($('#heroTotalValue'), { to: portfolio.totalValue, formatter: (v) => formatCurrency(v) });
-
-    const changeEl = $('#heroTodayChange');
-    changeEl.textContent = formatSignedCurrency(portfolio.todayChange);
-    changeEl.classList.add(isUp ? 'up' : 'down');
-
-    const pctEl = $('#heroTodayChangePercent');
-    pctEl.textContent = formatPercent(portfolio.todayChangePercent);
-    pctEl.classList.add(isUp ? 'up' : 'down');
-
-    $('#heroBuyingPower').textContent = formatCurrency(portfolio.buyingPower);
-
-    setSentiment(isUp);
-  } catch (err) {
-    console.error('[dashboard] hero failed', err);
-  }
-}
-
-/* ============================================================================
- * Market overview
- * ========================================================================== */
-
-async function renderMarketOverview() {
-  const container = $('#marketOverview');
-  container.innerHTML = skeletonCard(3);
-  try {
-    const indices = await api.getMarketOverview();
-    if (!indices.length) return renderEmpty(container, { title: 'No market data' });
-
-    container.innerHTML = indices
-      .map((idx) => {
-        const isUp = idx.changePercent >= 0;
-        return `
-        <div class="card card--interactive overview-card reveal">
-          <div class="overview-card__head">
-            <div>
-              <div class="overview-card__name">${escapeHTML(idx.name)}</div>
-              <div class="overview-card__ticker">${escapeHTML(idx.symbol)}</div>
+async function markets() {
+    const data = await get("/api/market");
+    $("#marketOverview").innerHTML = data.map(x => `
+        <div class="card overview-card">
+            <div class="card-top">
+                ${logo(x.symbol)}
+                <div>
+                    <div class="card-name">${x.name}</div>
+                    <div class="card-symbol">${x.symbol}</div>
+                </div>
             </div>
-          </div>
-          <div class="overview-card__value num">${formatCompactNumber(idx.price)}</div>
-          <div class="overview-card__foot">
-            ${changeValueInline(idx.changePercent)}
-            <div class="overview-card__spark">${sparklineSVG(idx.sparkline, isUp)}</div>
-          </div>
-        </div>`;
-      })
-      .join('');
-    revealOnScroll($$('.overview-card', container));
-  } catch (err) {
-    renderError(container, { title: "Couldn't load market overview", onRetry: renderMarketOverview });
-  }
-}
-
-
-
-let watchlistSymbols = new Set();
-
-async function renderTrending() {
-  const container = $('#trendingGrid');
-  container.innerHTML = skeletonCard(6);
-  try {
-    const stocks = await api.getTrending();
-    if (!stocks.length) return renderEmpty(container, { title: 'Nothing trending right now' });
-
-    container.innerHTML = stocks.map((s) => stockCardTemplate(s)).join('');
-    revealStagger($$('.stock-card', container));
-    bindWatchlistToggles(container);
-  } catch (err) {
-    renderError(container, { title: "Couldn't load trending stocks", onRetry: renderTrending });
-  }
-}
-
-function stockCardTemplate(s) {
-  const isUp = s.changePercent >= 0;
-  const isWatched = watchlistSymbols.has(s.symbol);
-  return `
-    <div class="card card--interactive stock-card" data-symbol="${escapeHTML(s.symbol)}">
-      <div class="stock-card__top">
-        ${stockLogo(s.symbol)}
-        <div class="stock-card__id">
-          <div class="stock-card__symbol">${escapeHTML(s.symbol)}</div>
-          <div class="stock-card__name">${escapeHTML(s.name)}</div>
+            <div class="price">${money(x.price)}</div>
+            ${change(x.changePercent)}
         </div>
-        <button class="watchlist-toggle ${isWatched ? 'is-active' : ''}" data-symbol="${escapeHTML(s.symbol)}" aria-label="Toggle watchlist">
-          ${icon('star')}
-        </button>
-      </div>
-      <div class="stock-card__spark">${sparklineSVG(s.sparkline, isUp)}</div>
-      <div class="stock-card__bottom">
-        <span class="stock-card__price num">${formatCurrency(s.price)}</span>
-        ${changePill(s.changePercent)}
-      </div>
+    `).join("");
+}
+
+let watched = new Set();
+
+function stockCard(s) {
+    return `<div class="card stock-card">
+        <div class="stock-top">
+            ${logo(s.symbol)}
+            <div>
+                <div class="card-name">${s.symbol}</div>
+                <div class="stock-name">${s.name}</div>
+            </div>
+            <button class="star ${watched.has(s.symbol) ? "active" : ""}"
+                    data-symbol="${s.symbol}">★</button>
+        </div>
+        <div class="price">${money(s.price)}</div>
+        ${change(s.changePercent)}
     </div>`;
 }
 
-async function bindWatchlistToggles(scope) {
-  $$('.watchlist-toggle', scope).forEach((btn) => {
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-
-      const symbol = btn.dataset.symbol;
-
-      if (btn.disabled) return;
-
-      const isWatched = watchlistSymbols.has(symbol);
-      const action = isWatched ? 'remove' : 'add';
-
-      btn.disabled = true;
-
-      try {
-        await api.updateWatchlist(symbol, action);
-
-        if (action === 'add') {
-            watchlistSymbols.add(symbol);
-            btn.classList.add('is-active');
-        } else {
-            watchlistSymbols.delete(symbol);
-            btn.classList.remove('is-active');
-        }
-      } catch (err) {
-        console.error('Failed to update watchlist:', err);
-      } finally {
-        btn.disabled = false;
-      }
+async function trending() {
+    const data = await get("/api/trending");
+    $("#trending").innerHTML = data.map(stockCard).join("");
+    $$(".star").forEach(b => b.onclick = async () => {
+        const symbol = b.dataset.symbol;
+        const add = !watched.has(symbol);
+        await fetch("/stock/data/watchlist", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": window.csrfToken
+            },
+            body: JSON.stringify({ symbol, action: add ? "add" : "remove" })
+        });
+        add ? watched.add(symbol) : watched.delete(symbol);
+        b.classList.toggle("active", add);
     });
-  });
 }
 
-/* ============================================================================
- * Market movers (gainers / losers)
- * ========================================================================== */
-
-async function renderMovers() {
-  const gainersEl = $('#gainersTable');
-  const losersEl = $('#losersTable');
-  gainersEl.innerHTML = skeletonRows(5);
-  losersEl.innerHTML = skeletonRows(5);
-  try {
-    const { gainers, losers } = await api.getMovers();
-    gainersEl.innerHTML = gainers.map(moverRow).join('');
-    losersEl.innerHTML = losers.map(moverRow).join('');
-  } catch (err) {
-    renderError(gainersEl.closest('.card'), { title: "Couldn't load movers", onRetry: renderMovers });
-  }
-}
-
-function moverRow(s) {
-  return `
-    <tr data-symbol="${escapeHTML(s.symbol)}">
-      <td class="cell-name">
-        ${stockLogo(s.symbol, { size: 'sm' })}
-        <div>
-          <div class="cell-symbol">${escapeHTML(s.symbol)}</div>
-          <div class="cell-sub">${escapeHTML(s.name)}</div>
-        </div>
-      </td>
-      <td class="is-numeric num">${formatCurrency(s.price)}</td>
-      <td class="is-numeric">${changePill(s.changePercent)}</td>
+async function movers() {
+    const d = await get("/api/movers");
+    const row = x => `<tr>
+        <td>${logo(x.symbol)} ${x.symbol}</td>
+        <td>${money(x.price)}</td>
+        <td>${change(x.changePercent)}</td>
     </tr>`;
+    $("#gainers").innerHTML = d.gainers.map(row).join("");
+    $("#losers").innerHTML = d.losers.map(row).join("");
 }
 
-/* ============================================================================
- * Watchlist strip
- * ========================================================================== */
-
-async function renderWatchlist() {
-  const container = $('#watchlistContainer');
-  container.innerHTML = skeletonCard(4);
-  try {
-    const items = await api.getWatchlist();
-    items.forEach((s) => watchlistSymbols.add(s.symbol));
-    if (!items.length) return renderEmpty(container, { title: 'Your watchlist is empty' });
-
-    container.innerHTML = items
-      .map((s) => {
-        const isUp = s.changePercent >= 0;
-        return `
-        <div class="card card--interactive watchlist-card" data-symbol="${escapeHTML(s.symbol)}">
-          <div class="watchlist-card__head">
-            ${stockLogo(s.symbol, { size: 'sm' })}
-            <div class="stock-card__id">
-              <div class="stock-card__symbol">${escapeHTML(s.symbol)}</div>
-            </div>
-          </div>
-          <div class="watchlist-card__spark">${sparklineSVG(s.sparkline, isUp)}</div>
-          <div class="stock-card__bottom">
-            <span class="stock-card__price num">${formatCurrency(s.price)}</span>
-            ${changePill(s.changePercent)}
-          </div>
-        </div>`;
-      })
-      .join('');
-    revealStagger($$('.watchlist-card', container));
-  } catch (err) {
-    renderError(container, { title: "Couldn't load watchlist", onRetry: renderWatchlist });
-  }
+async function watchlist() {
+    const d = await get("/api/watchlist");
+    d.forEach(x => watched.add(x.symbol));
+    $("#watchlist").innerHTML = d.length
+        ? d.map(stockCard).join("")
+        : `<div class="empty">Your watchlist is empty</div>`;
 }
 
-let transactionsExpanded = false;
+let chart, series, expanded = false;
 
-async function renderTransactions() {
-    const container = $('#transactionsTable');
-    const toggle = $('#transactionsToggle');
-
-    container.innerHTML = skeletonRows(6);
-
-    try {
-        const txs = await api.getTransactions();
-
-        if (!txs.length) {
-            toggle.style.display = 'none';
-            return renderEmpty(
-                container.closest('.card'),
-                { title: 'No transactions yet' }
-            );
-        }
-
-        container.innerHTML = txs
-            .map((tx, index) => {
-                const isBuy = tx.type === 'buy';
-
-                return `
-                <tr ${index >= 5 && !transactionsExpanded ? 'style="display:none"' : ''}>
-                    <td class="cell-name">
-                        ${stockLogo(tx.symbol, { size: 'sm' })}
-                        <div>
-                            <div class="cell-symbol">${escapeHTML(tx.symbol)}</div>
-                            <div class="cell-sub">${escapeHTML(tx.name)}</div>
-                        </div>
-                    </td>
-
-                    <td>
-                        <span class="pill ${isBuy ? 'pill--bull' : 'pill--bear'}">
-                            ${isBuy ? 'Buy' : 'Sell'}
-                        </span>
-                    </td>
-
-                    <td class="is-numeric num">${tx.shares}</td>
-                    <td class="is-numeric num">${formatCurrency(tx.price)}</td>
-                    <td class="is-numeric num">${formatCurrency(tx.total)}</td>
-                    <td class="text-tertiary">${formatDate(tx.date, 'short')}</td>
-                </tr>`;
-            })
-            .join('');
-
-        // Only show the button if there are more than 5 transactions
-        toggle.style.display = txs.length > 5 ? 'block' : 'none';
-
-        toggle.textContent = transactionsExpanded
-            ? 'Show less'
-            : 'Show all';
-
-    } catch (err) {
-        toggle.style.display = 'none';
-
-        renderError(
-            container.closest('.card'),
-            {
-                title: "Couldn't load transactions",
-                onRetry: renderTransactions
-            }
-        );
+async function portfolioChart(range = "1M") {
+    if (!chart) {
+        chart = LightweightCharts.createChart($("#portfolioChart"), {
+            layout: { background: { color: "transparent" }, textColor: "#999" },
+            grid: { vertLines: { color: "#222" }, horzLines: { color: "#222" } },
+            rightPriceScale: { borderColor: "#333" },
+            timeScale: { borderColor: "#333" },
+            autoSize: true
+        });
+        series = chart.addAreaSeries({
+            lineColor: "#2ecc71",
+            topColor: "#2ecc7150",
+            bottomColor: "#2ecc7105",
+            lineWidth: 2
+        });
     }
+
+    const data = await get(`/api/portfolio/history?range=${range}`);
+    if (!data.length) return;
+
+    series.setData(data.map(x => ({ time: x.date, value: x.net_worth })));
+    chart.timeScale().fitContent();
+
+    const first = data[0].net_worth;
+    const last = data.at(-1).net_worth;
+    $("#chartValue").textContent = money(last);
+    $("#chartChange").innerHTML = change((last - first) / first * 100);
 }
 
-const transactionsToggle = $('#transactionsToggle');
+async function transactions() {
+    const data = await get("/api/transactions");
 
-transactionsToggle.addEventListener('click', () => {
-    transactionsExpanded = !transactionsExpanded;
+    $("#transactions").innerHTML = data.map((x, i) => `
+        <tr class="${i >= 5 ? "extra-row" : ""}" ${i >= 5 ? 'style="display:none"' : ""}>
+            <td>${x.symbol}</td>
+            <td><span class="type ${x.type}">${x.type}</span></td>
+            <td>${x.shares}</td>
+            <td>${money(x.price)}</td>
+            <td>${money(x.total)}</td>
+            <td>${date(x.date)}</td>
+        </tr>
+    `).join("");
 
-    const rows = $('#transactionsTable').querySelectorAll('tr');
+    $("#transactionToggle").style.display = data.length > 5 ? "block" : "none";
+}
 
-    rows.forEach((row, index) => {
-        if (index >= 5) {
-            row.style.display = transactionsExpanded ? '' : 'none';
+function search() {
+    const input = $("#searchInput"), panel = $("#searchDropdown");
+    let active = -1;
+
+    function render(list) {
+        panel.innerHTML = list.length
+            ? `<div class="search-group">Results</div>` +
+              list.map(s => `<div class="search-result" data-symbol="${s}">
+                  ${logo(s)}
+                  <div><div class="search-name">${s}</div>
+                  <div class="search-sub">Stock</div></div>
+              </div>`).join("")
+            : `<div class="empty">Stock not currently supported</div>`;
+
+        $$(".search-result").forEach(x => x.onclick = () => go(x.dataset.symbol));
+        active = -1;
+    }
+
+    function go(symbol) {
+        const recent = JSON.parse(localStorage.getItem("tradesims:recentSearches") || "[]")
+            .filter(x => x !== symbol);
+        localStorage.setItem("tradesims:recentSearches",
+            JSON.stringify([symbol, ...recent].slice(0, 5)));
+        location.href = `/stock/${symbol}`;
+    }
+
+    input.onfocus = () => {
+        const recent = JSON.parse(localStorage.getItem("tradesims:recentSearches") || "[]");
+        render(recent.length ? recent : STOCKS.slice(0, 5));
+        panel.classList.add("open");
+    };
+
+    input.oninput = () => {
+        const q = input.value.toUpperCase().trim();
+        render(STOCKS.filter(s => s.includes(q)).slice(0, 6));
+        panel.classList.add("open");
+    };
+
+    input.onkeydown = e => {
+        const rows = [...panel.querySelectorAll(".search-result")];
+        if (e.key === "ArrowDown") active = Math.min(active + 1, rows.length - 1);
+        if (e.key === "ArrowUp") active = Math.max(active - 1, 0);
+        if (e.key === "Enter" && rows[active]) go(rows[active].dataset.symbol);
+        if (e.key === "Escape") panel.classList.remove("open");
+        rows.forEach((r, i) => r.classList.toggle("active", i === active));
+    };
+
+    document.onclick = e => {
+        if (!panel.contains(e.target) && e.target !== input)
+            panel.classList.remove("open");
+    };
+
+    document.onkeydown = e => {
+        if (e.key === "/" && document.activeElement !== input) {
+            e.preventDefault();
+            input.focus();
         }
+    };
+}
+
+function clock() {
+    const now = new Date();
+    $("#navClock").textContent = now.toLocaleTimeString("en-US", {
+        hour: "numeric", minute: "2-digit", second: "2-digit"
+    });
+    const open = now.getHours() >= 9 && now.getHours() < 23;
+    $("#marketStatus").textContent = open ? "● Market Open" : "● Market Closed";
+    $("#marketStatus").classList.toggle("open", open);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const h = new Date().getHours();
+    $("#greeting").textContent =
+        h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+
+    $("#profileButton").onclick = e => {
+        e.stopPropagation();
+        $("#profileMenu").classList.toggle("open");
+    };
+
+    $$("#ranges button").forEach(b => b.onclick = () => {
+        $$("#ranges button").forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+        portfolioChart(b.dataset.range);
     });
 
-    transactionsToggle.textContent = transactionsExpanded
-        ? 'Show less'
-        : 'Show all';
-});
+    $("#transactionToggle").onclick = () => {
+        expanded = !expanded;
+        $$(".extra-row").forEach(x => x.style.display = expanded ? "" : "none");
+        $("#transactionToggle").textContent = expanded ? "Show less" : "Show all";
+    };
 
-/*news*/ 
+    search();
+    clock();
+    setInterval(clock, 1000);
 
-async function renderNews() {
-  const container = $('#newsContainer');
-  if (!container) return;
-  container.innerHTML = skeletonCard(4);
-  try {
-    const news = await api.getNews();
-    if (!news.length) return renderEmpty(container, { title: 'No news right now' });
-
-    container.innerHTML = news
-      .map(
-        (n) => `
-      <div class="card news-card reveal">
-        <div class="news-card__thumb" style="background:hsl(${n.hue} 55% 22%)"></div>
-        <div class="news-card__body">
-          <span class="news-card__source">${escapeHTML(n.source)}</span>
-          <span class="news-card__headline">${escapeHTML(n.headline)}</span>
-          <span class="news-card__desc">${escapeHTML(n.description)}</span>
-          <span class="news-card__time">${timeAgo(n.timestamp)}</span>
-        </div>
-      </div>`
-      )
-      .join('');
-    revealOnScroll($$('.news-card', container));
-  } catch (err) {
-    renderError(container, { title: "Couldn't load news", onRetry: renderNews });
-  }
-}
-
-/* ============================================================================
- * Portfolio chart (TradingView Lightweight Charts)
- * ========================================================================== */
-
-let chart = null;
-let series = null;
-let currentRange = '1M';
-
-function initChartInstance() {
-  const container = $('#portfolioChart');
-  if (!container || typeof LightweightCharts === 'undefined') return;
-
-  chart = LightweightCharts.createChart(container, {
-    layout: {
-      background: { type: 'solid', color: 'transparent' },
-      textColor: 'rgba(148, 154, 172, 1)',
-      fontFamily: getComputedStyle(document.body).getPropertyValue('--font-ui') || 'sans-serif',
-    },
-    grid: {
-      vertLines: { color: 'rgba(255,255,255,0.04)' },
-      horzLines: { color: 'rgba(255,255,255,0.04)' },
-    },
-    rightPriceScale: { borderColor: 'rgba(255,255,255,0.08)' },
-    timeScale: { borderColor: 'rgba(255,255,255,0.08)' },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
-    autoSize: true,
-  });
-
-  series = chart.addAreaSeries({
-    lineColor: '#7c6cff',
-    topColor: 'rgba(124, 108, 255, 0.35)',
-    bottomColor: 'rgba(124, 108, 255, 0.02)',
-    lineWidth: 2,
-    priceLineVisible: false,
-  });
-}
-
-async function loadChartRange(range) {
-  currentRange = range;
-  try {
-    const history = await api.getPortfolioHistory(range);
-    
-    if (!history.length) return;
-
-    const isIntraday = range === '1D';
-    const data = history.map((bar) => ({
-      time : bar.date,
-      value: bar.net_worth,
-    }));
-    series?.setData(data);
-    chart?.timeScale().fitContent();
-
-    const first = history[0].net_worth;
-    const last = history[history.length - 1].net_worth;
-    const changePercent = ((last - first) / first) * 100;
-
-    $('#chartToolbarValue').textContent = formatCurrency(last);
-    const changeEl = $('#chartToolbarChange');
-    changeEl.innerHTML = changeValueInline(changePercent);
-  } catch (err) {
-    console.error('[dashboard] chart range failed', err);
-  }
-}
-
-function initChartControls() {
-  const controls = $('#chartRangeControls');
-  if (!controls) return;
-  $$('.segmented__btn', controls).forEach((btn) => {
-    btn.addEventListener('click', () => {
-      $$('.segmented__btn', controls).forEach((b) => b.classList.remove('is-active'));
-      btn.classList.add('is-active');
-      loadChartRange(btn.dataset.range);
-    });
-  });
-}
-
-async function initPortfolioChart() {
-  initChartInstance();
-  initChartControls();
-  await loadChartRange(currentRange);
-  window.addEventListener('resize', () => chart?.timeScale().fitContent());
-}
-
-function initSearch() {
-    const input = document.getElementById("searchInput");
-    const panel = document.getElementById("searchDropdown");
-
-    if (!input || !panel) return;
-
-    TSSearch.initSearch({
-        input,
-        panel,
-        onSelect(symbol) {
-          window.location.href = `/stock/${symbol}`;
-        }
-    });
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  initChrome();
-  initSearch();
-
-  renderHero();
-  renderMarketOverview();
-  renderWatchlist().then(() => {
-    renderTrending();
-  });
-  renderMovers();
-  renderTransactions();
-  renderNews();
-  initPortfolioChart();
-
-  revealOnScroll($$('.reveal'));
+    hero();
+    markets();
+    trending();
+    watchlist();
+    movers();
+    transactions();
+    portfolioChart();
 });
