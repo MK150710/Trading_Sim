@@ -120,6 +120,7 @@ TOP_STOCKS = [
 "FSLY",
 "ACMR",
 "KVYO",
+"CTVA",
 ]   
 
 LANDING_STOCK_POOL = [

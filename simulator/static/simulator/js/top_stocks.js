@@ -114,4 +114,5 @@ window.TOP_STOCKS = [
 "FSLY",
 "ACMR",
 "KVYO",
+"CTVA",
 ]
