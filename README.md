@@ -1,4 +1,12 @@
-# TRADESIMS - a web based trading simulator built using the Django Framework
+# TRADESIMS 
+
+Tradesims is a web based trading simulator built using:
+- Python's Django as the main framework
+- Vanilla CSS and JS
+- Supabase For Hosting database
+- Redis for caching
+- Nest container to host
+- Me for the frustration :(
 
 ## Tradesims offers
 - Real time data
@@ -26,3 +34,14 @@ Check out the website:
 Install on your own system:<br>
  [Install Guide](Install.md)<br><br>
 For any complaints or suggestions feel free to reach out on:<br> [Instagram](https://www.instagram.com/maanvik_157/)
+
+# My project in working
+
+- ## The Landing Page
+![Landing](pics/landing.png)
+- ## The Dashboard
+![Dashboard](pics/dashboard.png)
+- ## User Holdings
+![Holdings](pics/holdings.png)
+- ## Stock Page
+![AAPL](pics/stock.png)
