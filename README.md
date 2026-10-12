@@ -23,7 +23,22 @@ Tradesims is a web based trading simulator built using:
 
 ## Installation
 
-Clone the repository, create the `Proj_env` virtual environment, configure your `.env` file with Redis and PostgreSQL, install the requirements, run migrations, and start the Django development server.
+Heres a quick overview of how to install:
+
+- CLone the repo with ```git clone https://github.com/mk150710/trading_sim.git```
+- Create a venv names `Proj_env` with `python -m venv Proj_env` 
+- Activate using `Proj_env\Scripts\activate`
+- Copy example env `cp example.env .env`
+- Configure redis and postgress in their respective env placeholders. You can get personal access links from their respective websites
+- Install dependencies with `pip install -r requirements.txt`
+- Run :
+  ```
+  python manage.py makemigrations
+  python manage.py migrate
+  ```
+To migrate database
+- Start the website with `python manage.py runserver`
+Check it out at `http://127.0.0.1:8000/`
 
 For the full setup instructions, see the [Install Guide](Install.md).
 
